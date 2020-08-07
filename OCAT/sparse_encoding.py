@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 from sklearn.cluster import KMeans
 import warnings
 warnings.filterwarnings('ignore')
-import .example
+from . import example
 from .utils import m_estimate
 
 ##############################################
