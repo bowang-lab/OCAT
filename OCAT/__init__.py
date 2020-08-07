@@ -1,3 +1,3 @@
-from OCAT.utils import preprocess, apply_dim_reduct
-from OCAT.sparse_encoding import sparse_encoding_integration
-from OCAT.marker_gene import calculate_marker_gene
+from .utils import preprocess, apply_dim_reduct
+from .sparse_encoding import sparse_encoding_integration
+from .marker_gene import calculate_marker_gene
