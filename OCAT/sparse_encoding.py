@@ -1,13 +1,13 @@
 import numpy as np
 import os
-from fast_similarity_matching import FSM
 import faiss
+from .fast_similarity_matching import FSM
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 from sklearn.cluster import KMeans
 import warnings
 warnings.filterwarnings('ignore')
-import example
-from utils import m_estimate
+import .example
+from .utils import m_estimate
 
 ##############################################
 # In: data_list   [(a,n)...(z,n)]    -- list of datasets
