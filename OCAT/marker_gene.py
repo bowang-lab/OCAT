@@ -2,6 +2,7 @@ import importlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 def calculate_marker_gene(data, labels, topn, num_cluster, gene_labels, save_fig = None, save_csv = None):
     #TODO: add labels for the genes
     #data gene expression matrix gene x cell
