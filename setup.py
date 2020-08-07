@@ -9,7 +9,7 @@ setup(
   author = '',
   author_email = '',
   url = 'https://github.com/bowang-lab/OCAT',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/bowang-lab/OCAT/archive/v_01.tar.gz',    # I explain this later on
   keywords = ['RNA-SEQ', 'CLUSTERING', 'INTEGRATION'],
   install_requires=[
           'numpy',
