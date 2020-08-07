@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
   name = 'OCAT',
   packages = ['OCAT'],
-  version = '0.1',
+  version = '0.1.1',
   license='MIT',
   description = 'A new single-cell analytics framework',
   author = '',
