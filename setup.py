@@ -3,13 +3,13 @@ from distutils.core import setup
 setup(
   name = 'OCAT',
   packages = ['OCAT'],
-  version = '0.1.2',
+  version = '0.1.3',
   license='MIT',
   description = 'A new single-cell analytics framework',
   author = '',
   author_email = '',
   url = 'https://github.com/bowang-lab/OCAT',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/bowang-lab/OCAT/archive/v_0.1.2.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/bowang-lab/OCAT/archive/v_0.1.3.tar.gz',    # I explain this later on
   keywords = ['RNA-SEQ', 'CLUSTERING', 'INTEGRATION'],
   install_requires=[
           'numpy',
