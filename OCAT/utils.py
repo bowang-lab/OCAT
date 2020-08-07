@@ -1,8 +1,7 @@
 import numpy as np
 import os
-from fast_similarity_matching import FSM
+from .fast_similarity_matching import FSM
 import faiss
-#import h5py
 from scipy import *
 from scipy.sparse import *
 import scipy.sparse
