@@ -1,5 +1,5 @@
-## Mouse cortex example (Zeisel et al, 2018)
-We demonstrate how OCAT sparsely encodes single-cell gene expression data using 3,005 cells and 4,412 genes in the mouse somatosensory cortex and hippocampal CA1 region from Zeisel et al. (2018). 
+## Mouse cortex example (Zeisel et al, 2015)
+We demonstrate how OCAT sparsely encodes single-cell gene expression data using 3,005 cells and 4,412 genes in the mouse somatosensory cortex and hippocampal CA1 region from Zeisel et al. (2015). 
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
