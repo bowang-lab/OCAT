@@ -36,4 +36,4 @@ ZW_ = post_processing_pca(ZW)
 evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=random_seed)
 embedding = TSNE(n_components=2).fit_transform(W)
 ```
-<img src="https://github.com/bowang-lab/OCAT/vignettes/Clustering/Zeisel_clustering_v2.pdf" width="400" height="400" />  
+<img src="https://github.com/bowang-lab/OCAT/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
