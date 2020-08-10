@@ -6,6 +6,7 @@
 - [Step 2. Dimension reduction](#dim_reduct)
 - [Step 3. Contruct bipartite graph through ghost cells](#ghost_cell)
 - [Step 4. Clustering \& visualization](#clustering)
+- [Step 5. Gene prioritization](#gene_prior)
 
 <a name="data_import"></a>**Step 0. Import data**     
 ```python
@@ -13,6 +14,7 @@ data = loadmat('./Test_5_Zeisel.mat')
 in_X = csr_matrix(data['in_X'])
 gene_label = data['label2']
 labels_combined = data['true_labs']
+ds_combined = labels_combined.flatten()
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
