@@ -17,21 +17,23 @@ data_list = [in_X]
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
+The gene expression data is first pre-processed through log-transformation and normalization (using l2-norm). 
+
 ```python
 data_list = preprocess(data_list, log_norm=True, l2_norm=True)
 ```
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
 
-`dim` is the dimension of the subspace that the original gene expression vector is reduced to. 
+`dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method, Fast Similarity Matching (FSM), but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
 
 ```python
-## dim = 50
 data_list = apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
 ```
 
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
+OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
+
 ```python
-## m = 80
 ZW = sparse_encoding_integration_original(data_list, m = 80)
 ZW_ = post_processing_pca(ZW)
 ```
@@ -48,7 +50,7 @@ evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
 
-<a name="clustering"></a>**Step 5. Gene prioritization**
+<a name="gene_prior"></a>**Step 5. Gene prioritization**
 ```python
 ## import the gene labels of the mouse cortex scRNA-seq data
 gene_label = data['label2']
