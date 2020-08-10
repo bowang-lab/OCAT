@@ -16,7 +16,8 @@ import OCAT
 import numpy as np
 ```
 
-<a name="data_import"></a>**Step 0. Import data**     
+<a name="data_import"></a>**Step 0. Import data**   
+Pancreas dataset consists of five datasets 
 ```python
 from scipy.io import loadmat
 from scipy.sparse import csr_matrix
