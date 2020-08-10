@@ -22,7 +22,7 @@ data_list = preprocess(data_list, log_norm=True, l2_norm=True)
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
 ```python
 ## dim = 50
-data_list = apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=42)
+data_list = apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
 ```
 
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
