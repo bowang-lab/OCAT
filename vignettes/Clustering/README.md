@@ -17,6 +17,7 @@ data_list = [in_X]
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
+
 The gene expression data is first pre-processed through log-transformation and normalization (using l2-norm). 
 
 ```python
@@ -31,6 +32,7 @@ data_list = apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
 ```
 
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
+
 OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
 
 ```python
@@ -51,6 +53,7 @@ evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
 
 <a name="gene_prior"></a>**Step 5. Gene prioritization**
+
 ```python
 ## import the gene labels of the mouse cortex scRNA-seq data
 gene_label = data['label2']
