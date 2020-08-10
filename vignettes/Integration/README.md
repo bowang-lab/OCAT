@@ -17,14 +17,30 @@ import numpy as np
 ```
 
 <a name="data_import"></a>**Step 0. Import data**   
-Pancreas dataset consists of five datasets 
+The Human Pancreas dataset consists of five scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016, Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). Inside the `Pancreas` folder, the data and labels are organized as such:
+```
+Pancreas
+├── data
+│   ├── baron_1.npz
+│   ├── muraro_2.npz
+│   ├── seg_3.npz
+│   ├── wang_4.npz
+│   └── xin_5.npz
+└── label
+    ├── baron_1_label.npy
+    ├── muraro_2_label.npy
+    ├── seg_3_label.npy
+    ├── wang_4_label.npy
+    └── xin_5_label.npy
+```
+    
 ```python
 from scipy.io import loadmat
 from scipy.sparse import csr_matrix
 
-data = loadmat('./Test_5_Zeisel.mat')
-in_X = csr_matrix(data['in_X'])
-data_list = [in_X]
+data_path = './Pancreas/data'
+file_list = ['baron_1', 'muraro_2', 'seg_3', 'wang_4', 'xin_5']
+data_list = [load_npz(os.path.join(data_path, i + '.npz')).tocsr() for i in file_list]
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
@@ -54,9 +70,21 @@ ZW_ = post_processing_pca(ZW)
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
 
 ```python
-## import the annotated labels for the mouse cortex data
-labels_combined = data['true_labs']
-ds_combined = labels_combined.flatten()
+## import the annotated labels for the pancreas data
+label_path = './Pancreas/label'
+label_list = [np.load(os.path.join(label_path, i + '_label.npy'), allow_pickle=True) for i in file_list]
+labels_combined = np.concatenate(label_list, axis=0)
+
+## create dataset labels for the pancreas data
+def create_ds_label(label_list, file_list):
+    label_ds_list = []
+    for i, name in enumerate(file_list):
+        label_ds_temp = np.repeat(name, len(label_list[i]))
+        label_ds_list.append(label_ds_temp)
+    return label_ds_list
+
+label_ds_list = create_ds_label(label_list, file_list)
+ds_combined = np.concatenate(label_ds_list, axis=0)
 
 ## evaluate the clustering performance of the predicted labels
 evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
