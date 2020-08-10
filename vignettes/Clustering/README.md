@@ -22,6 +22,7 @@ ds_combined = labels_combined.flatten()
 data_list = preprocess(data_list, log_norm=True, l2_norm=True)
 ```
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
+
 dim is the number of 
 
 ```python
