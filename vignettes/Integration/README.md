@@ -46,7 +46,7 @@ data_list = OCAT.apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=4
 OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
 
 ```python
-ZW = OCAT.sparse_encoding_integration(data_list, m = 80)
+ZW = OCAT.sparse_encoding_integration(data_list, m = 100)
 ZW_ = post_processing_pca(ZW)
 ```
 
