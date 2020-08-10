@@ -16,5 +16,5 @@ $ pip install OCAT
 ```
 
 ## :heavy_plus_sign: Notebooks and Tutorials
-* [Clustering of Mouse Brain scRNA-seq Data (Zeisel et al. 2015)](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_2015_clustering.ipynb)
+* [Clustering of Mouse Brain scRNA-seq Data (Zeisel et al. 2015)](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/README.md)
 * [Integration of 5 Human Pancreatic scRNA-seq Datasets](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Pancreas_integration.ipynb)
