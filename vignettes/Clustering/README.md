@@ -1,4 +1,5 @@
 ## Mouse cortex (Zeisel et al, 2018)
+We demonstrate how OCAT sparsely encodes single-cell gene expression data using 3,005 cells and 4,412 genes in the mouse somatosensory cortex and hippocampal CA1 region from Zeisel et al. (2008). 
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
@@ -23,7 +24,7 @@ data_list = preprocess(data_list, log_norm=True, l2_norm=True)
 ```
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
 
-dim is the number of 
+`dim` is the dimension of the subspace that the original gene expression vector is reduced to. 
 
 ```python
 ## dim = 50
