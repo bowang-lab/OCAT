@@ -28,7 +28,7 @@ data_list = apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=42)
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
 ```python
 ## m = 80
-ZW = sparse_encoding_integration_original(data_list, m)
+ZW = sparse_encoding_integration_original(data_list, m = 80)
 ZW_ = post_processing_pca(ZW)
 ```
 
