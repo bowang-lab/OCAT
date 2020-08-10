@@ -61,6 +61,7 @@ ds_combined = labels_combined.flatten()
 evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/pancreas_integration.png" width="800" height="400" />  
+
 <a name="gene_prior"></a>**Step 5. Gene prioritization**
 
 ```python
