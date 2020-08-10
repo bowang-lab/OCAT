@@ -35,7 +35,7 @@ data_list = OCAT.preprocess(data_list, log_norm=True, l2_norm=True)
 ```
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
 
-`dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method `mode = 'FSM'`, but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
+`dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method (`mode = 'FSM'`), but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
 
 ```python
 data_list = OCAT.apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
