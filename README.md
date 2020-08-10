@@ -10,7 +10,7 @@ OCAT constructs sparse representation of cell features through ghost cells in th
 * Linux/Unix
 * Python 3.7
 
-Install OCAT package from PyPI.
+Install OCAT package from PyPI. Pre-installation of Numpy and Cython required.
 ```bash
 $ pip install OCAT
 ```
