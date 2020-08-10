@@ -1,4 +1,5 @@
 from distutils.core import setup
+<<<<<<< HEAD
 from distutils.extension import Extension
 import numpy
 
