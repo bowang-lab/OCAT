@@ -13,9 +13,7 @@ We demonstrate how OCAT sparsely encodes single-cell gene expression data using 
 ```python
 data = loadmat('./Test_5_Zeisel.mat')
 in_X = csr_matrix(data['in_X'])
-gene_label = data['label2']
-labels_combined = data['true_labs']
-ds_combined = labels_combined.flatten()
+data_list = [in_X]
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
@@ -41,12 +39,19 @@ ZW_ = post_processing_pca(ZW)
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
 
 ```python
+## import the annotated labels for the mouse cortex data
+labels_combined = data['true_labs']
+ds_combined = labels_combined.flatten()
+
+## evaluate the clustering performance of the predicted labels
 evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
-embedding = TSNE(n_components=2).fit_transform(W)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
 
 <a name="clustering"></a>**Step 5. Gene prioritization**
 ```python
+## import the gene labels of the mouse cortex scRNA-seq data
+gene_label = data['label2']
+
 calculate_marker_gene(data, labels, topn=5, gene_labels, save_fig = None, save_csv = None)
 ```
