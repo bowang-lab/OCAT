@@ -22,6 +22,8 @@ ds_combined = labels_combined.flatten()
 data_list = preprocess(data_list, log_norm=True, l2_norm=True)
 ```
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
+dim is the number of 
+
 ```python
 ## dim = 50
 data_list = apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
@@ -41,3 +43,8 @@ evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
 embedding = TSNE(n_components=2).fit_transform(W)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
+
+<a name="clustering"></a>**Step 5. Gene prioritization**
+```python
+calculate_marker_gene(data, labels, topn=5, gene_labels, save_fig = None, save_csv = None)
+```
