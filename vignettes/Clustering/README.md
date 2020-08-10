@@ -9,8 +9,16 @@ We demonstrate how OCAT sparsely encodes single-cell gene expression data using 
 - [Step 4. Clustering \& visualization](#clustering)
 - [Step 5. Gene prioritization](#gene_prior)
 
+```python
+import OCAT
+import numpy as np
+```
+
 <a name="data_import"></a>**Step 0. Import data**     
 ```python
+from scipy.io import loadmat
+from scipy.sparse import csr_matrix
+
 data = loadmat('./Test_5_Zeisel.mat')
 in_X = csr_matrix(data['in_X'])
 data_list = [in_X]
