@@ -60,8 +60,8 @@ ds_combined = labels_combined.flatten()
 ## evaluate the clustering performance of the predicted labels
 evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
-
+<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Pancreas_2_cluster.pdf" width="400" height="400" />  
+<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Pancreas_2_batch.pdf" width="400" height="400" />  
 <a name="gene_prior"></a>**Step 5. Gene prioritization**
 
 ```python
