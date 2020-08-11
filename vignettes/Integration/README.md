@@ -17,7 +17,15 @@ import numpy as np
 ```
 
 <a name="data_import"></a>**Step 0. Import data**   
-The Human Pancreas dataset consists of five scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016, Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). Inside the `Pancreas` folder, the data and labels are organized as such:
+The Human Pancreas dataset consists of five scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016, Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). 
+
+To download the compiled dataset:
+```bash
+$ wget https://data.wanglab.ml/OCAT/Pancreas.zip
+$ unzip Pancreas.zip 
+```
+
+Inside the `Pancreas` folder, the data and labels are organized as such:
 ```
 Pancreas
 ├── data
