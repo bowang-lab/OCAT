@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def calculate_marker_gene(data, labels, topn, num_cluster, gene_labels, save_fig = None, save_csv = None):
+def calculate_marker_gene(data, labels, topn, gene_labels):
     #TODO: add labels for the genes
     #data gene expression matrix gene x cell
     num_gene, num_cell = data.shape
+    num_cluster = len(np.unique(labels))
     cluster_order = []
     gene_idxv = []
     num_cells_inC = []
@@ -42,32 +43,30 @@ def calculate_marker_gene(data, labels, topn, num_cluster, gene_labels, save_fig
     #datav number of cluster * top n x number of cells
     #column vector, for each cell, the top 10 genes for each cluster that
     #differentiats the most
-    if save_csv:
-        gene_labels_save = gene_labels[gene_idxv]
-        gene_labels_save = np.reshape(gene_labels_save, [num_cluster, topn])
-        cluster_labels_save = ['C_{}'.format(i+1) for i in range(num_cluster)]
-        genes_df = pd.DataFrame(gene_labels_save, index=cluster_labels_save)
-        genes_df.to_csv(save_csv)
+    gene_labels_save = gene_labels[gene_idxv]
+    gene_labels_save = np.reshape(gene_labels_save, [num_cluster, topn])
+    cluster_labels_save = ['C_{}'.format(i+1) for i in range(num_cluster)]
+    genes_df = pd.DataFrame(gene_labels_save, index=cluster_labels_save)
 
-    if save_fig:
-        _, idx = np.unique(gene_idxv, return_index=True)
-        gene_idxv_u = gene_idxv[np.sort(idx)]
-        datav = data[gene_idxv_u,:][:,cluster_order]
-        gene_labels = gene_labels[gene_idxv_u]
-        gene_len = gene_labels.shape[0]
-        #center is num_cluster * top n column vector, each value corresponds the average expression
-        #for a gene across all num_cells
-        center = np.mean(datav, axis = 1)
-        #standard deviation
-        scale = np.std(datav, axis = 1)
-        #Check for zeros and set them to 1 so not to scale them.
-        scale_ind = np.where(scale == 0)
-        scale[scale_ind] = 1
-        #(data - mean)/scale deviation
-        sdata = np.divide(np.subtract(datav,center.reshape((gene_len,1))),scale.reshape((gene_len,1)))
-        thresh = 3
-        plot_marker_genes(sdata, gene_labels, num_cells_inC, thresh, save_fig)
-    return
+    #save fig
+    _, idx = np.unique(gene_idxv, return_index=True)
+    gene_idxv_u = gene_idxv[np.sort(idx)]
+    datav = data[gene_idxv_u,:][:,cluster_order]
+    gene_labels = gene_labels[gene_idxv_u]
+    gene_len = gene_labels.shape[0]
+    #center is num_cluster * top n column vector, each value corresponds the average expression
+    #for a gene across all num_cells
+    center = np.mean(datav, axis = 1)
+    #standard deviation
+    scale = np.std(datav, axis = 1)
+    #Check for zeros and set them to 1 so not to scale them.
+    scale_ind = np.where(scale == 0)
+    scale[scale_ind] = 1
+    #(data - mean)/scale deviation
+    sdata = np.divide(np.subtract(datav,center.reshape((gene_len,1))),scale.reshape((gene_len,1)))
+    thresh = 3
+    fig = plot_marker_genes(sdata, gene_labels, num_cells_inC, thresh, save_fig)
+    return gene_df, fig
 
 def plot_marker_genes(sdata, gene_labels, num_cells_inC, thresh, save_fig):
     num_cluster = len(num_cells_inC)
@@ -95,6 +94,4 @@ def plot_marker_genes(sdata, gene_labels, num_cells_inC, thresh, save_fig):
         plt.yticks(np.arange(gene_len))
     else:
         plt.yticks(np.arange(gene_len),gene_labels.flatten())
-    #filename='marker_gene_{}_{}.png'.format(num_cluster, topn)
-    plt.savefig(save_fig)
-    return
+    return fig

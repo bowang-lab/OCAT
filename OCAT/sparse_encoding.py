@@ -4,6 +4,8 @@ import faiss
 from .fast_similarity_matching import FSM
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 import OCAT.example as example
@@ -202,9 +204,11 @@ def norm(Z):
 #       m                                      -- num of anchors
 #       p                                      -- percentage of NNs to consider
 #       cn                                     -- rounds of optimization
+#       if_pca                                 -- flag for whether to take PCA
+#       topk                                   -- topk PCs to take
 # Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
 ###################################################################
-def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5):
+def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5, if_pca=True, topk=20):
     if m==None:
         m = m_estimate(data_list)
     # find anchors
@@ -222,5 +226,16 @@ def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5):
     Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
     ZW = Z_to_ZW(Z)
     ZW = norm(np.nan_to_num(ZW))
-    return ZW, Z
+    if if_pca:
+        ZW = post_processing_pca(ZW, topk=topk)
+    return ZW
 
+def post_processing_pca(Z, topk=20):
+    # center data by standard scaling
+    scaler=StandardScaler()
+    scaler.fit(Z)
+    Z = scaler.transform(Z)
+    # take topk PCs
+    pca = PCA(n_components=topk, svd_solver='arpack')
+    pca_result = pca.fit_transform(Z)
+    return pca_result

@@ -218,3 +218,13 @@ def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=F
         anchor_list = [np.nan_to_num(pca.transform(i)) for i in anchor_list]
     return data_list
 
+##############################################
+# In: Z                              -- OCAT features
+#     num_cluster                    -- num of clusters desired
+# Out:
+#     pca_ground.labels_             -- list of predicted cluster labels
+# Description: The function reduces the datasets to dim subspaces
+##############################################
+def evaluate_clusters(Z, num_cluster, n_init=20):
+    pca_ground = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
+    return pca_ground.labels_
