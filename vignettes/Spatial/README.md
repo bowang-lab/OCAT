@@ -19,8 +19,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 my_data = np.load('./brain_spatial.npz')
-my_data = my_data['data']
-in_X = csr_matrix(my_data['A'])
+in_X = csr_matrix(my_data['data'])
 my_data_list = [in_X.T]
 ```
 
