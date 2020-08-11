@@ -16,10 +16,10 @@ import numpy as np
 
 <a name="data_import"></a>**Step 0. Import data**     
 ```python
-from scipy.io import loadmat
 from scipy.sparse import csr_matrix
 
-my_data = loadmat('./brain_spatial.mat')
+my_data = np.load('./brain_spatial.npz')
+my_data = my_data['data']
 in_X = csr_matrix(my_data['A'])
 my_data_list = [in_X.T]
 ```
