@@ -9,8 +9,16 @@ We demonstrate how OCAT sparsely encodes single-cell gene expression data using 
 - [Step 4. Clustering \& visualization](#clustering)
 - [Step 5. Gene prioritization](#gene_prior)
 
+```python
+import OCAT
+import numpy as np
+```
+
 <a name="data_import"></a>**Step 0. Import data**     
 ```python
+from scipy.io import loadmat
+from scipy.sparse import csr_matrix
+
 data = loadmat('./Test_5_Zeisel.mat')
 in_X = csr_matrix(data['in_X'])
 data_list = [in_X]
@@ -21,14 +29,14 @@ data_list = [in_X]
 The gene expression data is first pre-processed through log-transformation and normalization (using l2-norm). 
 
 ```python
-data_list = preprocess(data_list, log_norm=True, l2_norm=True)
+data_list = OCAT.preprocess(data_list, log_norm=True, l2_norm=True)
 ```
 <a name="dim_reduct"></a>**Step 2. Dimension reduction**
 
 `dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method `mode = 'FSM'`, but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
 
 ```python
-data_list = apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
+data_list = OCAT.apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
 ```
 
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
@@ -36,7 +44,7 @@ data_list = apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
 OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
 
 ```python
-ZW = sparse_encoding_integration_original(data_list, m = 80)
+ZW = OCAT.sparse_encoding_integration(data_list, m = 80)
 ZW_ = post_processing_pca(ZW)
 ```
 

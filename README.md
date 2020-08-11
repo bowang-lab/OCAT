@@ -10,11 +10,11 @@ OCAT constructs sparse representation of cell features through ghost cells in th
 * Linux/Unix
 * Python 3.7
 
-Install OCAT package from PyPI.
+Install OCAT package from PyPI. Pre-installation of Numpy and Cython required.
 ```bash
 $ pip install OCAT
 ```
 
 ## :heavy_plus_sign: Notebooks and Tutorials
 * [Clustering of Mouse Brain scRNA-seq Data (Zeisel et al. 2015)](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/README.md)
-* [Integration of 5 Human Pancreatic scRNA-seq Datasets](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Pancreas_integration.ipynb)
+* [Integration of 5 Human Pancreatic scRNA-seq Datasets](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/README.md)
