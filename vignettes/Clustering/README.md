@@ -51,11 +51,10 @@ ZW = OCAT.sparse_encoding_integration(data_list, m = 80)
 
 ```python
 ## import the annotated labels for the mouse cortex data
-labels_combined = data['true_labs']
-ds_combined = labels_combined.flatten()
+labels_true = data['true_labs']
 
 ## evaluate the clustering performance of the predicted labels
-num_cluster = len(np.unique(labels_combined))
+num_cluster = len(np.unique(labels_true))
 labels_pred = evaluate(ZW, n_cluster=n_cluster)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
