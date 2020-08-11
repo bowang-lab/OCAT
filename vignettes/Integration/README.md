@@ -11,11 +11,6 @@ Tran et al. removed cells with ambiguous annotations, and the resulting batches 
 - [Step 4. Clustering \& visualization](#clustering)
 - [Step 5. Gene prioritization](#gene_prior)
 
-```python
-import OCAT
-import numpy as np
-```
-
 <a name="data_import"></a>**Step 0. Import data**   
 The Human Pancreas dataset consists of five scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016, Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). 
 
@@ -43,12 +38,17 @@ Pancreas
 ```
     
 ```python
-from scipy.io import loadmat
-from scipy.sparse import csr_matrix
+import os
+from scipy.sparse import load_npz, csr_matrix
 
 data_path = './Pancreas/data'
 file_list = ['baron_1', 'muraro_2', 'seg_3', 'wang_4', 'xin_5']
 data_list = [load_npz(os.path.join(data_path, i + '.npz')).tocsr() for i in file_list]
+```
+
+```python
+import OCAT
+import numpy as np
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
