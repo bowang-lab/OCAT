@@ -45,7 +45,6 @@ OCAT constructs a sparsified bipartite graph to embed the gene expression of eac
 
 ```python
 ZW = OCAT.sparse_encoding_integration(data_list, m = 80)
-ZW_ = post_processing_pca(ZW)
 ```
 
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
@@ -56,7 +55,8 @@ labels_combined = data['true_labs']
 ds_combined = labels_combined.flatten()
 
 ## evaluate the clustering performance of the predicted labels
-evaluate(ZW_, labels_combined, ds_combined, mode='ZW_', random_seed=42)
+num_cluster = len(np.unique(labels_combined))
+labels_pred = evaluate(ZW, n_cluster=n_cluster)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="400" height="400" />  
 
