@@ -36,7 +36,7 @@ data_list = OCAT.preprocess(data_list, log_norm=True, l2_norm=True)
 `dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method `mode = 'FSM'`, but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
 
 ```python
-data_list = OCAT.apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=42)
+data_list = OCAT.apply_dim_reduct(data_list, dim = 30, mode='FSM', random_seed=42)
 ```
 
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
@@ -44,7 +44,7 @@ data_list = OCAT.apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=4
 OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
 
 ```python
-ZW = OCAT.sparse_encoding_integration(data_list, m = 80)
+ZW = OCAT.sparse_encoding_integration(data_list, m = 50)
 ```
 
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
