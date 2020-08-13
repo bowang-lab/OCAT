@@ -57,7 +57,7 @@ labels_true = data['true_labs']
 num_cluster = len(np.unique(labels_true))
 labels_pred, fig = evaluate(ZW, n_cluster=n_cluster)
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/img/zeisel_August13.png" width="400" height="400" />  
+<img src="https://github.com/bowang-lab/OCAT/blob/master/img/zeisel_August13.png"/>  
 
 <a name="gene_prior"></a>**Step 5. Gene prioritization**
 
