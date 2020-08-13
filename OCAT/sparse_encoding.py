@@ -204,11 +204,9 @@ def norm(Z):
 #       m                                      -- num of anchors
 #       p                                      -- percentage of NNs to consider
 #       cn                                     -- rounds of optimization
-#       if_pca                                 -- flag for whether to take PCA
-#       topk                                   -- topk PCs to take
 # Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
 ###################################################################
-def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5, if_pca=True, topk=20):
+def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5):
     if m==None:
         m = m_estimate(data_list)
     # find anchors
@@ -226,8 +224,6 @@ def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5, if_pca=True, top
     Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
     ZW = Z_to_ZW(Z)
     ZW = norm(np.nan_to_num(ZW))
-    if if_pca:
-        ZW = post_processing_pca(ZW, topk=topk)
     return ZW
 
 def post_processing_pca(Z, topk=20):
