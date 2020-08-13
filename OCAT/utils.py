@@ -225,6 +225,16 @@ def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=F
 #     pca_ground.labels_             -- list of predicted cluster labels
 # Description: The function reduces the datasets to dim subspaces
 ##############################################
-def evaluate_clusters(Z, num_cluster, n_init=20):
-    pca_ground = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
-    return pca_ground.labels_
+def evaluate_clusters(Z, num_cluster, n_init=20, return_umap=True):
+    clusters = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
+    if return_umap:
+        reducer = umap.UMAP()
+        Z_scaled = StandardScaler().fit_transform(Z)
+        embedding = reducer.fit_transform(Z_scaled)
+        ax = sns.scatterplot(embedding[:, 0], embedding[:, 1], hue=clusters.labels_, palette=sns.color_palette('muted', n_colors=num_cluster))
+        ax.set(xlabel='UMAP0', ylabel='UMAP1', xticklabels=[], yticklabels=[])
+        ax.set_xticks([])
+        ax.set_yticks([])
+        return clusters.labels_, ax.get_figure()
+    else:
+        return clusters.labels_
