@@ -5,13 +5,13 @@ import numpy
 setup(
   name = 'OCAT',
   packages = ['OCAT'],
-  version = '0.1.20',
+  version = '0.1.25',
   license='MIT',
   description = 'A new single-cell analytics framework',
   author = '',
   author_email = '',
   url = 'https://github.com/bowang-lab/OCAT',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/bowang-lab/OCAT/archive/v_0.1.20.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/bowang-lab/OCAT/archive/v_0.1.25.tar.gz',    # I explain this later on
   keywords = ['RNA-SEQ', 'CLUSTERING', 'INTEGRATION'],
   install_requires=[
           'numpy',
@@ -20,7 +20,9 @@ setup(
           'sklearn',
           'matplotlib',
           'scipy',
-          'cython'
+          'cython',
+          'umap-learn',
+          'seaborn'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package

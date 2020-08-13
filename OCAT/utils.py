@@ -21,7 +21,9 @@ import sys
 #import FSM as FSM_example
 #from memory_profiler import profile
 import sys
-
+#import umap
+import umap.umap_ as umap
+import seaborn as sns
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
         if is_memory:
