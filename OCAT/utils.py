@@ -24,6 +24,7 @@ import sys
 #import umap
 import umap.umap_ as umap
 import seaborn as sns
+
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
         if is_memory:
@@ -151,11 +152,16 @@ def dim_estimate(data_list):
     return dim
 
 #TODO
-def m_estimate(data_list):
+def m_estimate_(data_list):
     min_cell_num = min([i.shape[0] for i in data_list])
     m = max(20, round(min_cell_num/100))
     print('estimated m: {}'.format(m))
     return m
+
+def m_estimate(data_list):
+    m_list = [max(20, round(i.shape[0]/100)) for i in data_list]
+    print('estimated m_list: {}'.format(m_list))
+    return m_list
 
 def balanced_smapling(data_list, random_seed=42):
     n_dataset = [X.shape[0] for X in data_list]
@@ -227,7 +233,7 @@ def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=F
 #     pca_ground.labels_             -- list of predicted cluster labels
 # Description: The function reduces the datasets to dim subspaces
 ##############################################
-def evaluate_clusters(Z, num_cluster, n_init=20, return_umap=True):
+def evaluate_clusters_(Z, num_cluster, n_init=20, return_umap=True):
     clusters = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
     if return_umap:
         reducer = umap.UMAP()
@@ -240,3 +246,17 @@ def evaluate_clusters(Z, num_cluster, n_init=20, return_umap=True):
         return clusters.labels_, ax.get_figure()
     else:
         return clusters.labels_
+
+def evaluate_clusters(Z, num_cluster, n_init=20):
+    clusters = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
+    return clusters.labels_
+
+def plot_umap(Z, labels):
+    reducer = umap.UMAP()
+    Z_scaled = StandardScaler().fit_transform(Z)
+    embedding = reducer.fit_transform(Z_scaled)
+    ax = sns.scatterplot(embedding[:, 0], embedding[:, 1], hue=labels, palette=sns.color_palette('muted', n_colors=len(np.unique(labels))))
+    ax.set(xlabel='UMAP0', ylabel='UMAP1', xticklabels=[], yticklabels=[])
+    ax.set_xticks([])
+    ax.set_yticks([])
+    return ax.get_figure()

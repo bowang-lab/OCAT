@@ -18,7 +18,7 @@ from .utils import m_estimate
 #     anchor list [(m,n)...(m,n)]    -- list of anchors 
 # Description: The function generates the corresponding anchors for the datasets
 ##############################################
-def find_anchors(data_list, m):
+def find_anchors_(data_list, m):
     anchor_list = []
     for X in data_list:
         X = X.astype(np.float32)
@@ -29,6 +29,16 @@ def find_anchors(data_list, m):
         anchor_list.append(anchors)
     return anchor_list
 
+def find_anchors(data_list, m):
+    anchor_list = []
+    for i, X in enumerate(data_list):
+        X = X.astype(np.float32)
+        d = X.shape[1]
+        kmeans = faiss.Kmeans(d, m[i], niter=20, verbose=False)
+        kmeans.train(X)
+        anchors = kmeans.centroids
+        anchor_list.append(anchors)
+    return anchor_list
 ##############################################
 # In: X      (c,n)
 # Out:
@@ -206,7 +216,7 @@ def norm(Z):
 #       cn                                     -- rounds of optimization
 # Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
 ###################################################################
-def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5):
+def sparse_encoding_integration_(data_list, m=None, p=0.3, cn=5):
     if m==None:
         m = m_estimate(data_list)
     # find anchors
@@ -225,6 +235,27 @@ def sparse_encoding_integration(data_list, m=None, p=0.3, cn=5):
     ZW = Z_to_ZW(Z)
     ZW = norm(np.nan_to_num(ZW))
     return ZW
+
+def sparse_encoding_integration(data_list, m_list=None, p=0.3, cn=5):
+    if m_list==None:
+        m_list = [m_estimate(d) for d in data_list]
+    # find anchors
+    anchor_list = find_anchors(data_list, m_list)
+    # construct sparse anchor graph
+    s_list = [round(p*m) for m in m_list]
+    Z_list = []
+    for i, dataset in enumerate(data_list):
+        dataset_Z_list = []
+        for j, anchor in enumerate(anchor_list):
+            Z = AnchorGraph(dataset.transpose(), anchor.transpose(), s[j], 2, cn)
+            dataset_Z_list.append(Z)
+        dataset_Z = np.concatenate(dataset_Z_list, axis=1)
+        Z_list.append(dataset_Z)
+    Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
+    ZW = Z_to_ZW(Z)
+    ZW = norm(np.nan_to_num(ZW))
+    return ZW
+
 
 def post_processing_pca(Z, topk=20):
     # center data by standard scaling
