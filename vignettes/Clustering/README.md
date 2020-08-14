@@ -53,9 +53,12 @@ ZW = OCAT.sparse_encoding_integration(data_list, m = 50)
 ## import the annotated labels for the mouse cortex data
 labels_true = data['true_labs']
 
+## predict clustering labels for the cells
+labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_true)))
+
 ## evaluate the clustering performance of the predicted labels
-num_cluster = len(np.unique(labels_true))
-labels_pred, fig = evaluate(ZW, n_cluster=n_cluster)
+from sklearn.metrics.cluster import normalized_mutual_info_score
+NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/img/zeisel_August13.png"/>  
 
