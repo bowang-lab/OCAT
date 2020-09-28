@@ -236,18 +236,19 @@ def sparse_encoding_integration_(data_list, m=None, p=0.3, cn=5):
     ZW = norm(np.nan_to_num(ZW))
     return ZW
 
-def sparse_encoding_integration(data_list, m_list=None, p=0.3, cn=5):
+def sparse_encoding_integration(data_list, m_list=None, s_list=None, p=0.3, cn=5):
     if m_list==None:
         m_list = [m_estimate(d) for d in data_list]
     # find anchors
     anchor_list = find_anchors(data_list, m_list)
     # construct sparse anchor graph
-    s_list = [round(p*m) for m in m_list]
+    if s_list ==None:
+        s_list = [round(p*m) for m in m_list]
     Z_list = []
     for i, dataset in enumerate(data_list):
         dataset_Z_list = []
         for j, anchor in enumerate(anchor_list):
-            Z = AnchorGraph(dataset.transpose(), anchor.transpose(), s[j], 2, cn)
+            Z = AnchorGraph(dataset.transpose(), anchor.transpose(), s_list[j], 2, cn)
             dataset_Z_list.append(Z)
         dataset_Z = np.concatenate(dataset_Z_list, axis=1)
         Z_list.append(dataset_Z)

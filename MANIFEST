@@ -4,6 +4,7 @@ setup.py
 OCAT/__init__.py
 OCAT/example.pyx
 OCAT/fast_similarity_matching.py
+OCAT/lineage.py
 OCAT/marker_gene.py
 OCAT/sparse_encoding.py
 OCAT/utils.py
