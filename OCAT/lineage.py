@@ -16,7 +16,7 @@ import time
 import pandas as pd
 
 def estimate_num_cluster(Z):
-    n_clusters = 100
+    n_clusters = int(Z.shape[0]/10)
     thresh = 0.85
     pca = KMeans(n_clusters=n_clusters, n_init=20).fit(Z)
     cluster_label = pca.labels_
@@ -26,7 +26,8 @@ def estimate_num_cluster(Z):
     D = np.diag(A.sum(axis=1))
     L = D-A
     eigvals = np.linalg.eigvals(L)
-    n_clusters_1 = np.sum(np.where(eigvals==0, 1, 0))
+    n_clusters_1 = np.sum(np.where(eigvals<2.76**-15, 1, 0))
+    print(n_clusters_1)
     pca = KMeans(n_clusters=n_clusters_1, n_init=20).fit(Z)
     cluster_label = pca.labels_
     return cluster_label

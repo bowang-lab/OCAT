@@ -5,7 +5,7 @@ import numpy
 setup(
   name = 'OCAT',
   packages = ['OCAT'],
-  version = '0.1.29',
+  version = '0.1.39',
   license='MIT',
   description = 'A new single-cell analytics framework',
   author = '',
