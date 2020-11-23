@@ -46,16 +46,8 @@ OCAT constructs a sparsified bipartite graph to embed the gene expression of eac
 ZW = OCAT.sparse_encoding_integration(data_list, m = 125)
 ```
 
-<a name="clustering"></a>**Step 4. Clustering \& visualization**
+<a name="clustering"></a>**Step 4. Visualization**
 
-```python
-## import the annotated labels for the mouse cortex data
-labels_true = data['true_labs']
-
-## evaluate the clustering performance of the predicted labels
-num_cluster = len(np.unique(labels_true))
-labels_pred = evaluate(ZW, n_cluster=n_cluster)
-```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Spatial/OCAT_spatial_v3.png" width="400" height="400" />  
 
 <a name="gene_prior"></a>**Step 5. Gene prioritization**

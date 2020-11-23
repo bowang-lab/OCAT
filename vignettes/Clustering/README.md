@@ -67,6 +67,7 @@ NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 ```python
 ## import the gene labels of the mouse cortex scRNA-seq data
 gene_label = data['label2']
-
-calculate_marker_gene(data, labels, topn=5, gene_labels, save_fig = None, save_csv = None)
+gene_df, fig = OCAT.calculate_marker_gene(in_X.T, labels_pred, 5, gene_label, vmin=0, vmax=5)
+gene_df.to_csv('marker_gene.csv')
+plt.savefig('marker_gene.png')
 ```
