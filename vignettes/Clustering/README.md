@@ -65,6 +65,8 @@ NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 <a name="gene_prior"></a>**Step 5. Gene prioritization**
 
 ```python
+import matplotlib.pyplot as plt
+
 ## import the gene labels of the mouse cortex scRNA-seq data
 gene_label = data['label2']
 gene_df, fig = OCAT.calculate_marker_gene(in_X.T, labels_pred, 5, gene_label, vmin=0, vmax=5)
