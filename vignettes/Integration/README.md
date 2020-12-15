@@ -68,10 +68,10 @@ data_list = OCAT.apply_dim_reduct(data_list, dim = 50, mode='FSM', random_seed=4
 
 <a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
 
-OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
+OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m_list` is the number of ghost cells that each single cell connects to. 
 
 ```python
-ZW = OCAT.sparse_encoding_integration(data_list, m = 100)
+ZW = OCAT.sparse_encoding_integration(data_list, m_list = [100, 100, 100, 100, 100])
 ```
 
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
