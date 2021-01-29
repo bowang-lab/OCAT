@@ -44,14 +44,14 @@ data_list = OCAT.apply_dim_reduct(data_list, dim = 30, mode='FSM', random_seed=4
 OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
 
 ```python
-ZW = OCAT.sparse_encoding_integration(data_list, m = 50)
+ZW = OCAT.sparse_encoding_integration(data_list, m_list = [50])
 ```
 
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
 
 ```python
 ## import the annotated labels for the mouse cortex data
-labels_true = data['true_labs']
+labels_true = data['true_labs'].flatten()
 
 ## predict clustering labels for the cells
 labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_true)))
@@ -68,7 +68,7 @@ NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 import matplotlib.pyplot as plt
 
 ## import the gene labels of the mouse cortex scRNA-seq data
-gene_label = data['label2']
+gene_label = data['label2'].flatten()
 gene_df, fig = OCAT.calculate_marker_gene(in_X.T, labels_pred, 5, gene_label, vmin=0, vmax=5)
 gene_df.to_csv('marker_gene.csv')
 plt.savefig('marker_gene.png')
