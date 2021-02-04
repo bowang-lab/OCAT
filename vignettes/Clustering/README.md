@@ -73,4 +73,4 @@ gene_df, fig = OCAT.calculate_marker_gene(in_X.T, labels_pred, 5, gene_label, vm
 gene_df.to_csv('marker_gene.csv')
 plt.savefig('marker_gene.png')
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/img/marker_gene_JAN31.png"/>
+<img src="https://github.com/bowang-lab/OCAT/blob/master/img/marker_gene_JAN31.png" width="500" height="500"/>
