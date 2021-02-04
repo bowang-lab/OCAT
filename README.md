@@ -4,7 +4,7 @@ OCAT provides a fast and memory-efficient framework for analyzing and integratin
 ## :heavy_plus_sign: Method
 OCAT constructs sparse representation of cell features through ghost cells in the datasets. These ghost cells serve as bridges to inform on cell-cell similarity between the original cells. With the sparse features extracted, OCAT provides an efficient framework for cell type clustering and dataset integration that achieves state-of-the-art performance.
 
-![Alt text,scale=0.1](https://github.com/bowang-lab/OCAT/blob/master/img/Figure1_update.png)
+![Alt text,scale=0.1](https://github.com/bowang-lab/OCAT/blob/master/img/Figure1_update.png)<!-- .element height="50%" width="50%" -->
 
 ## :triangular_ruler: Requirements and Installation
 * Linux/Unix
