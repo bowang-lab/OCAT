@@ -86,7 +86,7 @@ embedding = save_coordinates(ZW, save_path='./', save_name='Z_coordinates_X.txt'
 ```python
 Lineage, root_cluster, cluster_labels, tree = OCAT.compute_lineage(ZW, labels_combined, root_cluster='Myoblasts', name='OE', reverse=0)
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/img/trajectory.png" width="300" height="300"/>
+<img src="https://github.com/bowang-lab/OCAT/blob/master/img/trajectory.png" width="350" height="350"/>
 
 <a name="pseudo"></a>**Step 6. Pseudotime inference**
 ```python
@@ -94,4 +94,4 @@ Ptime, root_cell_list = OCAT.compute_ptime(ZW, labels_combined, Lineage, root_cl
 
 draw_Ptime(Ptime, Lineage, root_cell_list, labels_combined, labels_combined_c, embedding, './ptime.png', 'ptime.png')
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/img/ptime.png" width="300" height="300"/>
+<img src="https://github.com/bowang-lab/OCAT/blob/master/img/ptime.png" width="500" height="500"/>
