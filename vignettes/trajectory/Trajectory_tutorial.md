@@ -15,6 +15,21 @@ import numpy as np
 ```
 
 <a name="data_import"></a>**Step 0. Import data**     
+
+To download the compiled dataset:
+```bash
+$ wget https://data.wanglab.ml/OCAT/HSMM.zip
+$ unzip HSMM.zip 
+```
+
+Inside the `HSMM` folder, the data and labels are organized as such:
+```
+HSMM
+├── HSMM_label.txt
+├── HSMM.txt
+├── time_points.txt
+```
+
 ```python
 from scipy.io import loadmat
 from scipy.sparse import csr_matrix
