@@ -36,19 +36,11 @@ HSMM
 import pandas as pd
 
 data = pd.read_csv('./HSMM/HSMM.txt', delimiter=' ')
-label = pd.read_csv('./HSMM/HSMM_label.txt', delimiter=' ')
-time_label = pd.read_csv('./HSMM/time_points.txt', delimiter=' ')
-time_label['Time_points'] = [int(i.split('T')[-1]) for i in time_label['Time_points']]
-time_label = np.array(time_label).flatten()
 
 #Transpose data matrix to cell by gene
 data = data.T
 data = csr_matrix(data)
 data_list = [data]
-labels_combined_c = np.array(label.loc[:,'V1'])
-mapping = {1: 'Fibroblast', 2:'Myotubes', 3: 'Myoblasts', 4:'Undiff', 5:'Intermediates'}
-labels_combined = [mapping[i] for i in labels_combined_c]
-labels_combined = np.array(labels_combined)
 ```
 
 <a name="pre_processing"></a>**Step 1. Data pre-processing**
@@ -77,6 +69,12 @@ ZW = OCAT.sparse_encoding_integration(data_list, m_list=[25])
 <a name="clustering"></a>**Step 4. Clustering \& visualization**
 
 ```python
+label = pd.read_csv('./HSMM/HSMM_label.txt', delimiter=' ')
+labels_combined_c = np.array(label.loc[:,'V1'])
+mapping = {1: 'Fibroblast', 2:'Myotubes', 3: 'Myoblasts', 4:'Undiff', 5:'Intermediates'}
+labels_combined = [mapping[i] for i in labels_combined_c]
+labels_combined = np.array(labels_combined)
+
 num_cluster = len(np.unique(labels_combined))
 pca = KMeans(n_clusters=num_cluster, n_init=20).fit(ZW)
 nmi = normalized_mutual_info_score(labels_combined, pca.labels_)
