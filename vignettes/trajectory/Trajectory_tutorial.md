@@ -33,6 +33,7 @@ HSMM
 
 ```python
 import pandas as pd
+from scipy.sparse import csr_matrix
 
 data = pd.read_csv('./HSMM/HSMM.txt', delimiter=' ')
 
@@ -68,6 +69,8 @@ ZW = OCAT.sparse_encoding_integration(data_list, m_list=[25])
 <a name="clustering"></a>**Step 4. Clustering**
 
 ```python
+from sklearn.cluster import KMeans
+
 label = pd.read_csv('./HSMM/HSMM_label.txt', delimiter=' ')
 labels_combined_c = np.array(label.loc[:,'V1'])
 mapping = {1: 'Fibroblast', 2:'Myotubes', 3: 'Myoblasts', 4:'Undiff', 5:'Intermediates'}
