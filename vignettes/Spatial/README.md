@@ -7,7 +7,6 @@ We demonstrate how OCAT sparsely encodes spatial single-cell gene expression dat
 - [Step 2. Dimension reduction](#dim_reduct)
 - [Step 3. Contruct bipartite graph through ghost cells](#ghost_cell)
 - [Step 4. Clustering \& visualization](#clustering)
-- [Step 5. Gene prioritization](#gene_prior)
 
 ```python
 import OCAT
@@ -50,11 +49,3 @@ ZW = OCAT.sparse_encoding_integration(data_list, m = 125)
 
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Spatial/OCAT_spatial_v3.png" width="400" height="400" />  
 
-<a name="gene_prior"></a>**Step 5. Gene prioritization**
-
-```python
-## import the gene labels of the mouse cortex scRNA-seq data
-gene_label = data['label2']
-
-calculate_marker_gene(data, labels, topn=5, gene_labels, save_fig = None, save_csv = None)
-```
