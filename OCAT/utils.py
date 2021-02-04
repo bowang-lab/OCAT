@@ -24,6 +24,7 @@ import sys
 #import umap
 import umap.umap_ as umap
 import seaborn as sns
+from .lineage import estimate_num_cluster
 
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
@@ -247,7 +248,10 @@ def evaluate_clusters_(Z, num_cluster, n_init=20, return_umap=True):
     else:
         return clusters.labels_
 
-def evaluate_clusters(Z, num_cluster, n_init=20):
+def evaluate_clusters(Z, num_cluster=None, n_init=20):
+    if num_cluster is None:
+        cluster_label = estimate_num_cluster(Z)
+    num_cluster = len(np.unique(cluster_label))
     clusters = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
     return clusters.labels_
 

@@ -1,11 +1,12 @@
 from distutils.core import setup
+import setuptools
 from distutils.extension import Extension
 import numpy
 
 setup(
   name = 'OCAT',
   packages = ['OCAT'],
-  version = '0.1.39',
+  version = '0.1.43',
   license='MIT',
   description = 'A new single-cell analytics framework',
   author = '',
@@ -14,12 +15,12 @@ setup(
   download_url = 'https://github.com/bowang-lab/OCAT/archive/v_0.1.28.tar.gz',    # I explain this later on
   keywords = ['RNA-SEQ', 'CLUSTERING', 'INTEGRATION'],
   install_requires=[
-          'numpy',
+          'numpy>=1.17.2',
           'pandas',
-          'faiss',
-          'sklearn',
+          'faiss-cpu',
+          'scikit-learn>=0.21.3',
           'matplotlib',
-          'scipy',
+          'scipy>=1.3.1',
           'cython',
           'umap-learn',
           'seaborn',
