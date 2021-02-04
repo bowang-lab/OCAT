@@ -6,7 +6,7 @@ We demonstrate how OCAT infers trajecotry and pseudotime using the human skeleta
 - [Step 1. Data pre-processing](#pre_processing)
 - [Step 2. Dimension reduction](#dim_reduct)
 - [Step 3. Contruct bipartite graph through ghost cells](#ghost_cell)
-- [Step 4. Clustering \& visualization](#clustering)
+- [Step 4. Clustering](#clustering)
 - [Step 5. Trajectory inference](#trajectory)
 - [Step 6. Pseudotime inference](#pseudo)
 
@@ -65,7 +65,7 @@ OCAT constructs a sparsified bipartite graph to embed the gene expression of eac
 ZW = OCAT.sparse_encoding_integration(data_list, m_list=[25])
 ```
 
-<a name="clustering"></a>**Step 4. Clustering \& visualization**
+<a name="clustering"></a>**Step 4. Clustering**
 
 ```python
 label = pd.read_csv('./HSMM/HSMM_label.txt', delimiter=' ')
