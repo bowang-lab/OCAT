@@ -82,6 +82,7 @@ embedding = save_coordinates(ZW, save_path='./', save_name='Z_coordinates_X.txt'
 
 
 <a name="trajectory"></a>**Step 5. Trajectory inference**
+
 `OCAT.compute_lineage()` function infers `Lineages` over clusters with the OCAT features, predicted/true cluster labels and a user-specified root_cluster.
 
 ```python
@@ -90,6 +91,9 @@ Lineage, root_cluster, cluster_labels, tree = OCAT.compute_lineage(ZW, labels_co
 <img src="https://github.com/bowang-lab/OCAT/blob/master/img/trajectory.png" width="350" height="350"/>
 
 <a name="pseudo"></a>**Step 6. Pseudotime inference**
+
+`OCAT.compute_ptime()` function infers `Ptime` for individual cell using OCAT features and the predicted Lineage. `OCAT.draw_Ptime()` function visualizes the inferred lineages and pseudotime.
+
 ```python
 Ptime, root_cell_list = OCAT.compute_ptime(ZW, labels_combined, Lineage, root_cluster, embedding)
 
