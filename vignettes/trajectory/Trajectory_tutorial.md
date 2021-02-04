@@ -1,5 +1,5 @@
 ## Trajectory and pseudotime inference with HSMM example 
-We demonstrate how OCAT infers trajecotry and pseudotime using the human skeletal muscle myoblast (HSMM) dataset from Tran and Bader (2020). 
+We demonstrate how OCAT infers trajectory and pseudotime using the human skeletal muscle myoblast (HSMM) dataset from Tran and Bader (2020). 
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
