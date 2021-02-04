@@ -9,7 +9,7 @@ Tran et al. removed cells with ambiguous annotations, and the resulting batches 
 - [Step 2. Dimension reduction](#dim_reduct)
 - [Step 3. Contruct bipartite graph through ghost cells](#ghost_cell)
 - [Step 4. Clustering \& visualization](#clustering)
-- [Step 5. Gene prioritization](#gene_prior)
+
 
 <a name="data_import"></a>**Step 0. Import data**   
 The Human Pancreas dataset consists of five scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016, Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). 
