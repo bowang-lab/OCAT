@@ -29,7 +29,6 @@ Inside the `HSMM` folder, the data and labels are organized as such:
 HSMM
 ├── HSMM_label.txt
 ├── HSMM.txt
-├── time_points.txt
 ```
 
 ```python
