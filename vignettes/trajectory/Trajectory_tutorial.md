@@ -83,7 +83,7 @@ embedding = save_coordinates(ZW, save_path='./', save_name='Z_coordinates_X.txt'
 
 <a name="trajectory"></a>**Step 5. Trajectory inference**
 
-`OCAT.compute_lineage()` function infers `Lineages` over clusters with the OCAT features, predicted/true cluster labels and a user-specified root_cluster.
+`OCAT.compute_lineage()` function infers `Lineages` over clusters with the OCAT features, predicted/true cluster labels and a user-specified `root_cluster`.
 
 ```python
 Lineage, root_cluster, cluster_labels, tree = OCAT.compute_lineage(ZW, labels_combined, root_cluster='Myoblasts', name='OE', reverse=0)
