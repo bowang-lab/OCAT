@@ -98,12 +98,3 @@ num_cluster = len(np.unique(labels_combined))
 labels_pred = evaluate(ZW, n_cluster=n_cluster)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/pancreas_integration.png" width="800" height="400" />  
-
-<a name="gene_prior"></a>**Step 5. Gene prioritization**
-
-```python
-## import the gene labels of the mouse cortex scRNA-seq data
-gene_label = data['label2']
-
-calculate_marker_gene(data, labels, topn=5, gene_labels, save_fig = None, save_csv = None)
-```
