@@ -92,7 +92,7 @@ Lineage, root_cluster, cluster_labels, tree = OCAT.compute_lineage(ZW, labels_co
 
 <a name="pseudo"></a>**Step 6. Pseudotime inference**
 
-`OCAT.compute_ptime()` function infers `Ptime` for individual cell using OCAT features and the predicted Lineage. `OCAT.draw_Ptime()` function visualizes the inferred lineages and pseudotime.
+`OCAT.compute_ptime()` function infers pseudotime for individual cell using the OCAT extracted features and the predicted lineage. `OCAT.draw_Ptime()` function visualizes the inferred lineages and pseudotime.
 
 ```python
 Ptime, root_cell_list = OCAT.compute_ptime(ZW, labels_combined, Lineage, root_cluster, embedding)
