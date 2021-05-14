@@ -225,6 +225,10 @@ def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=F
         pca.fit(data_combined)
         data_list = [np.nan_to_num(pca.transform(i)) for i in data_list]
         anchor_list = [np.nan_to_num(pca.transform(i)) for i in anchor_list]
+    return data_list, Wm
+
+def apply_dim_reduct_inference(data_list, Wm):
+    data_list = [i.dot(Wm) for i in data_list]
     return data_list
 
 ##############################################
