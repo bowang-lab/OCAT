@@ -140,7 +140,6 @@ def online_FSM_sp(X, k, random_seed, Minv0 = None, Uhat0 = None, scal = 10, ind=
     W = fsm.W
     return Wm, Minv, W
 
-#TODO
 def dim_estimate(data_list):
     gene_num = data_list[0].shape[1]
     if gene_num < 5000:
@@ -152,15 +151,16 @@ def dim_estimate(data_list):
     print('estimated dim: {}'.format(dim))
     return dim
 
-#TODO
-def m_estimate_(data_list):
-    min_cell_num = min([i.shape[0] for i in data_list])
-    m = max(20, round(min_cell_num/100))
-    print('estimated m: {}'.format(m))
-    return m
-
 def m_estimate(data_list):
-    m_list = [max(20, round(i.shape[0]/100)) for i in data_list]
+    m_list = []
+    for i in data_list:
+        n_cells = i.shape[0]
+        if n_cells < 2000:
+            m_list.append(20)
+        elif n_cells < 10000:
+            m_list.append(40)
+        else:
+            m_list.append(60)
     print('estimated m_list: {}'.format(m_list))
     return m_list
 

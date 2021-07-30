@@ -4,13 +4,14 @@ import faiss
 from .fast_similarity_matching import FSM
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 from sklearn.cluster import KMeans
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 import OCAT.example as example
-from .utils import m_estimate
+from .utils import m_estimate, dim_estimate
+from sklearn import svm
 
 ##############################################
 # In: data_list   [(a,n)...(z,n)]    -- list of datasets
@@ -181,42 +182,19 @@ def AnchorGraph (TrainData, Anchor, s, flag, cn = 5):
 # Out:  ZW         (n,m)  -- approximation for ZW, where W=(n,n) similarity matrix
 ###################################################################
 def Z_to_ZW(Z):
-    #Z_r = np.matmul(Z, np.diag(np.sqrt(np.sum(Z,0)**-1)))
-    #Z_l = np.matmul(np.diag(np.sqrt(np.sum(Z,0)**-1)), Z.T)
-    #temp_Z1 = np.linalg.multi_dot([np.diag(np.sum(zW,0)**-1), zW.T])
-    #temp_Z2 = np.matmul(temp_Z1, Z)
-    #W_anchor = np.matmul(Z_l, Z_r)
     W_anchor = np.matmul(Z.T, Z)
     W_diag = np.diag(np.sqrt(np.sum(W_anchor,0)**-1))
     W_anchor = np.linalg.multi_dot([W_diag, W_anchor, W_diag])
-    #W_anchor = norm(W_anchor)
     ZW = np.matmul(Z, W_anchor)
-    #WZ = np.linalg.multi_dot([zW, temp_Z2])
-    #T = np.dot(zW.transpose(), zW)
-    #rL = np.linalg.multi_dot([np.diag(np.sqrt(np.sum(T,0))), T, np.diag(np.sqrt(np.sum(T,0))**-1)])
-    #WZ = np.linalg.multi_dot([zW, rL])
-    #anotherY = np.matmul(anotherY, np.diag(np.sqrt(np.sum(anotherY,0)**-1)))
     return ZW, W_anchor
 
-def Z_to_ZW_2(Z, anchor_list):
-    a = np.concatenate(anchor_list, 0)
-    #a = np.array(anchor_list[0])
-    W_anchor = np.matmul(a, a.T)
-    W_diag = np.diag(np.sqrt(np.sum(W_anchor,0)**-1))
-    W_anchor = np.linalg.multi_dot([W_diag, W_anchor, W_diag])
-    ZW = np.matmul(Z, W_anchor)
-    print('this is shape of ZW')
-    print(ZW.shape)
-    return ZW, W_anchor
 ####################################################################
 # In:   Z          (n,m)  -- input regression weight matrix
 # Out:
 #       Z          (n,m)  -- matrix norm normalized regression weight matrix
 ###################################################################
 def norm(Z):
-    print(Z.shape)
     Z_norm = np.linalg.norm(Z, axis=1)
-    print(Z_norm.shape)
     Z_norm = np.expand_dims(Z_norm, axis=1)
     Z = np.divide(Z, Z_norm)
     Z = np.nan_to_num(Z)
@@ -249,14 +227,10 @@ def sparse_encoding_integration_(data_list, m=None, p=0.3, cn=5):
     ZW = norm(np.nan_to_num(ZW))
     return ZW
 
-def sparse_encoding_integration(data_list, m_list=None, s_list=None, p=0.3, cn=5, if_inference=True):
-    if m_list==None:
-        m_list = [m_estimate(d) for d in data_list]
+def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_inference=True):
     # find anchors
     anchor_list = find_anchors(data_list, m_list)
     # construct sparse anchor graph
-    if s_list ==None:
-        s_list = [round(p*m) for m in m_list]
     Z_list = []
     for i, dataset in enumerate(data_list):
         dataset_Z_list = []
@@ -266,23 +240,14 @@ def sparse_encoding_integration(data_list, m_list=None, s_list=None, p=0.3, cn=5
         dataset_Z = np.concatenate(dataset_Z_list, axis=1)
         Z_list.append(dataset_Z)
     Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
-    #TODO: comment back
     ZW, W_anchor = Z_to_ZW(Z)
-    #ZW, W_anchor = Z_to_ZW_2(Z, anchor_list)
     ZW = norm(np.nan_to_num(ZW))
     if if_inference:
         return ZW, anchor_list, s_list, W_anchor
     else:
         return ZW
 
-def cell_inference(data_list, anchor_list, s_list, ZW_db, pred_labels, W_anchor, cn=5, k=5):
-    #if m_list==None:
-    #    m_list = [m_estimate(d) for d in data_list]
-    # find anchors
-    # anchor_list = find_anchors(data_list, m_list)
-    # construct sparse anchor graph
-    #if s_list ==None:
-    #    s_list = [round(p*m) for m in m_list]
+def cell_inference_(data_list, anchor_list, s_list, ZW_db, pred_labels, W_anchor, cn=5):
     Z_list = []
     for i, dataset in enumerate(data_list):
         dataset_Z_list = []
@@ -291,20 +256,52 @@ def cell_inference(data_list, anchor_list, s_list, ZW_db, pred_labels, W_anchor,
             dataset_Z_list.append(Z)
         dataset_Z = np.concatenate(dataset_Z_list, axis=1)
         Z_list.append(dataset_Z)
-    #print('Z_list')
-    #print(np.concatenate(Z_list, axis=0))
     Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
-    print(Z)
-    #ZW = Z_to_ZW(Z)
-    #print(ZW)
     ZW = np.matmul(Z, W_anchor)
-    #ZW = norm(np.nan_to_num(ZW))
-    #ZW, _ = Z_to_ZW_2(Z, anchor_list)
     ZW = norm(np.nan_to_num(ZW))
-    neigh = KNeighborsClassifier(n_neighbors=k)
-    neigh.fit(ZW_db, pred_labels)
-    label_neigh = neigh.predict(ZW)
-    return ZW, label_neigh
+    clf = svm.SVC()
+    clf.fit(ZW_db, pred_labels)
+    test_label = clf.predict(ZW)
+    return ZW, test_label
+
+def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, if_inference=False, random_seed=42):
+    if m_list == None:
+        m_list = m_estimate(data_list)
+    if s_list ==None:
+        s_list = [round(p*m) for m in m_list]
+    if dim == None:
+        dim = dim_estimate(data_list)
+    data_list = OCAT.preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    if if_inference:
+        data_list, Wm = OCAT.apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
+        ZW, anchor_list, s_list, W_anchor = OCAT.sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True)
+        db_list = [anchor_list, s_list, W_anchor, Wm]
+        return ZW, db_list
+    else:
+        data_list, _ = OCAT.apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
+        ZW = OCAT.sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=False)
+        return ZW
+
+def run_cell_inference(data_list, ZW_db, labels_db, db_list, log_norm=True, l2_norm=True, cn=5, k=5):
+    [anchor_list, s_list, W_anchor, Wm] = db_list
+    data_list = OCAT.preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    data_list = OCAT.apply_dim_reduct_inference(data_list, Wm)
+    Z_list = []
+    for i, dataset in enumerate(data_list):
+        dataset_Z_list = []
+        for j, anchor in enumerate(anchor_list):
+            Z = AnchorGraph(dataset.transpose(), anchor.transpose(), s_list[j], 2, cn)
+            dataset_Z_list.append(Z)
+        dataset_Z = np.concatenate(dataset_Z_list, axis=1)
+        Z_list.append(dataset_Z)
+    Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
+    ZW = np.matmul(Z, W_anchor)
+    ZW = norm(np.nan_to_num(ZW))
+
+    clf = SVC(random_state=42)
+    clf.fit(ZW_db, labels_db)
+    labels = clf.predict(ZW)
+    return ZW, labels
 
 def post_processing_pca(Z, topk=20):
     # center data by standard scaling
