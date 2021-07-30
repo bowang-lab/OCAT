@@ -20,17 +20,6 @@ from sklearn import svm
 #     anchor list [(m,n)...(m,n)]    -- list of anchors 
 # Description: The function generates the corresponding anchors for the datasets
 ##############################################
-def find_anchors_(data_list, m):
-    anchor_list = []
-    for X in data_list:
-        X = X.astype(np.float32)
-        n,d = X.shape
-        kmeans = faiss.Kmeans(d, m, niter=20, verbose=False)
-        kmeans.train(X)
-        anchors = kmeans.centroids
-        anchor_list.append(anchors)
-    return anchor_list
-
 def find_anchors(data_list, m):
     anchor_list = []
     for i, X in enumerate(data_list):
@@ -41,6 +30,7 @@ def find_anchors(data_list, m):
         anchors = kmeans.centroids
         anchor_list.append(anchors)
     return anchor_list
+
 ##############################################
 # In: X      (c,n)
 # Out:
@@ -49,7 +39,6 @@ def find_anchors(data_list, m):
 #      picks the first kk th that sums up to 1 and scales them
 #      to be of range 0 to 1
 ##############################################
-
 def SimplexPr(X):
     C, N = X.shape
     #to sort in descending order
@@ -83,7 +72,6 @@ def SimplexPr(X):
 #      such that x <- U * z
 #
 ###################################################################
-
 def LAE (x,U,cn):
     d, s = U.shape
     #print("d, s: ", d, s)
@@ -96,27 +84,17 @@ def LAE (x,U,cn):
     beta[0][0] = 1
     for t in range(cn):
         alpha = (delta[0][t]-1)/delta[0][t+1]
-        #print("alpha: ", alpha.shape)
         v = z1 + alpha*(z1-z0)
-        #print("v: ", v.shape)
         dif = x - np.matmul(U,v)
-        #print("dif: ", dif.shape)
         gv = np.matmul(dif.transpose(),dif/2)
-        #print("gv: ", gv.shape)
         dgv = np.matmul(U.transpose(),np.matmul(U,v)-x)
-        #print("dgv: ", dgv.shape)
         for j in range(d+1):
             b = 2**j*beta[0][t]
-            #print("b: ", b.shape)
-            #TODO
             z = SimplexPr(v-dgv/b)
-            #print("z: ", z.shape)
             dif = x - np.matmul(U,z)
             gz = np.matmul(dif.transpose(),dif/2)
-            #print("gz: ", gz.shape)
             dif = z - v
             gvz = gv + np.matmul(dgv.transpose(),dif) + b * np.matmul(dif.transpose(),dif/2)
-            #print("gvz: ", gvz.shape)
             if gz <= gvz:
                 beta[0][t+1] = b
                 z0 = z1
@@ -149,8 +127,6 @@ def AnchorGraph (TrainData, Anchor, s, flag, cn = 5):
     Similarity = cosine_similarity(TrainData.transpose(), Anchor.transpose())
     val = np.sort(Similarity, axis=1)[:, -s:]
     pos = np.argsort(Similarity, axis=1)[:, -s:]
-    #cos_Anchor = cosine_similarity(Anchor.transpose(), Anchor.transpose())
-    #matlab supports indexing element(i,j) in nxm matrix as i*m+j, python doesn't
     #flatten matrix and reshape back to nxm
     ind = ((pos)*n + np.repeat(np.array([range(n)]).transpose(),s,1)).astype(int)
     # Gaussian kernel-defined Z
@@ -202,31 +178,13 @@ def norm(Z):
 
 ####################################################################
 # In:   data_list       [(a,dim)...(z,dim)]    -- list of datasets (dim PCs)
-#       m                                      -- num of anchors
+#       m_list                                 -- num of anchors
+#       s_list                                 -- num of anchors to be selected
 #       p                                      -- percentage of NNs to consider
 #       cn                                     -- rounds of optimization
+#       if_inference                           -- flag for cell inference
 # Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
 ###################################################################
-def sparse_encoding_integration_(data_list, m=None, p=0.3, cn=5):
-    if m==None:
-        m = m_estimate(data_list)
-    # find anchors
-    anchor_list = find_anchors(data_list, m)
-    # construct sparse anchor graph
-    s = round(p*m)
-    Z_list = []
-    for i, dataset in enumerate(data_list):
-        dataset_Z_list = []
-        for j, anchor in enumerate(anchor_list):
-            Z = AnchorGraph(dataset.transpose(), anchor.transpose(), s, 2, cn)
-            dataset_Z_list.append(Z)
-        dataset_Z = np.concatenate(dataset_Z_list, axis=1)
-        Z_list.append(dataset_Z)
-    Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
-    ZW = Z_to_ZW(Z)
-    ZW = norm(np.nan_to_num(ZW))
-    return ZW
-
 def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_inference=True):
     # find anchors
     anchor_list = find_anchors(data_list, m_list)
@@ -247,23 +205,21 @@ def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_
     else:
         return ZW
 
-def cell_inference_(data_list, anchor_list, s_list, ZW_db, pred_labels, W_anchor, cn=5):
-    Z_list = []
-    for i, dataset in enumerate(data_list):
-        dataset_Z_list = []
-        for j, anchor in enumerate(anchor_list):
-            Z = AnchorGraph(dataset.transpose(), anchor.transpose(), s_list[j], 2, cn)
-            dataset_Z_list.append(Z)
-        dataset_Z = np.concatenate(dataset_Z_list, axis=1)
-        Z_list.append(dataset_Z)
-    Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
-    ZW = np.matmul(Z, W_anchor)
-    ZW = norm(np.nan_to_num(ZW))
-    clf = svm.SVC()
-    clf.fit(ZW_db, pred_labels)
-    test_label = clf.predict(ZW)
-    return ZW, test_label
-
+####################################################################
+# In:   data_list       [(a,dim)...(z,dim)]    -- list of datasets (dim PCs)
+#       m_list                                 -- num of anchors
+#       s_list                                 -- num of anchors to be selected
+#       dim                                    -- num of dimensions after dim reduct
+#       p                                      -- percentage of NNs to consider
+#       log_norm                               -- if apply log norm
+#       l2_norm                                -- if apply l2 norm
+#       if_inference                           -- if prepare for cell inference
+#       random_seed                            -- random seed
+#       cn                                     -- rounds of optimization
+# Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
+#       db_list                                -- anchor_list, s_list, W_anchor, Wm
+#                                                 from reference dataset for cell inference
+###################################################################
 def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, if_inference=False, random_seed=42):
     if m_list == None:
         m_list = m_estimate(data_list)
@@ -282,7 +238,18 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
         ZW = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=False)
         return ZW
 
-def run_cell_inference(data_list, ZW_db, labels_db, db_list, log_norm=True, l2_norm=True, cn=5, k=5):
+####################################################################
+# In:   data_list       [(a,dim)...(z,dim)]    -- list of inference datasets (dim PCs)
+#       ZW_db                                  -- OCAT features of the reference dataset
+#       labels_db                              -- cell type annotations from reference dataset
+#       db_list                                -- reference db info returned from run_OCAT
+#       log_norm                               -- if apply log norm
+#       l2_norm                                -- if apply l2 norm
+#       cn                                     -- rounds of optimization
+# Out:  ZW              (a+...+z, m)           -- OCAT features of the inference dataset
+#       labels                                 -- inferred cell type labels from inference dataset
+###################################################################
+def run_cell_inference(data_list, ZW_db, labels_db, db_list, log_norm=True, l2_norm=True, cn=5):
     [anchor_list, s_list, W_anchor, Wm] = db_list
     data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
     data_list = apply_dim_reduct_inference(data_list, Wm)
