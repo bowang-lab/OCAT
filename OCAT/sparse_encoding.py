@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 import OCAT.example as example
-from .utils import m_estimate, dim_estimate
+from .utils import m_estimate, dim_estimate, apply_dim_reduct, apply_dim_reduct_inference, preprocess
 from sklearn import svm
 
 ##############################################
@@ -271,21 +271,21 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
         s_list = [round(p*m) for m in m_list]
     if dim == None:
         dim = dim_estimate(data_list)
-    data_list = OCAT.preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
     if if_inference:
-        data_list, Wm = OCAT.apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
-        ZW, anchor_list, s_list, W_anchor = OCAT.sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True)
+        data_list, Wm = apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
+        ZW, anchor_list, s_list, W_anchor = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True)
         db_list = [anchor_list, s_list, W_anchor, Wm]
         return ZW, db_list
     else:
-        data_list, _ = OCAT.apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
-        ZW = OCAT.sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=False)
+        data_list, _ = apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
+        ZW = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=False)
         return ZW
 
 def run_cell_inference(data_list, ZW_db, labels_db, db_list, log_norm=True, l2_norm=True, cn=5, k=5):
     [anchor_list, s_list, W_anchor, Wm] = db_list
-    data_list = OCAT.preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
-    data_list = OCAT.apply_dim_reduct_inference(data_list, Wm)
+    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    data_list = apply_dim_reduct_inference(data_list, Wm)
     Z_list = []
     for i, dataset in enumerate(data_list):
         dataset_Z_list = []
