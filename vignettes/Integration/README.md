@@ -78,4 +78,4 @@ ds_combined = np.concatenate(label_ds_list, axis=0)
 num_cluster = len(np.unique(labels_combined))
 labels_pred = evaluate(ZW, n_cluster=n_cluster)
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="800" height="400" />  
+<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="1200" height="900" />  
