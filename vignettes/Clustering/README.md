@@ -5,7 +5,7 @@ We demonstrate how OCAT sparsely encodes single-cell gene expression data using 
 - [Step 0. Import data](#data_import)
 - [Step 1. Run OCAT](#run_ocat)
 - [Step 2. Clustering \& visualization](#clustering)
-- [Step 3. Gene prioritization](#gene_prior)
+- [Step 3. Differential gene analysis](#gene_prior)
 
 ```python
 import OCAT
