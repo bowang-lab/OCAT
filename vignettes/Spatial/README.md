@@ -3,10 +3,8 @@ We demonstrate how OCAT sparsely encodes spatial single-cell gene expression dat
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
-- [Step 1. Data pre-processing](#pre_processing)
-- [Step 2. Dimension reduction](#dim_reduct)
-- [Step 3. Contruct bipartite graph through ghost cells](#ghost_cell)
-- [Step 4. Clustering \& visualization](#clustering)
+- [Step 1. Run OCAT](#run_OCAT)
+- [Step 2. Clustering \& visualization](#clustering)
 
 ```python
 import OCAT
@@ -22,7 +20,7 @@ in_X = csc_matrix(my_data['data'])
 my_data_list = [in_X.T]
 ```
 
-<a name="pre_processing"></a>**Step 1. Run OCAT**
+<a name="run_OCAT"></a>**Step 1. Run OCAT**
 
 
 ```python
