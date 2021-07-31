@@ -27,7 +27,7 @@ HSMM
 ├── HSMM_label.txt
 ├── HSMM.txt
 ```
-Load the data to python. 
+Load data
 
 ```python
 import pandas as pd
@@ -40,6 +40,7 @@ data_list = [data]
 ```
 
 <a name="run_OCAT"></a>**Step 1. Run OCAT**
+
 Extract the OCAT sparse encoding of the raw gene expression matrix. 
 
 ```python
