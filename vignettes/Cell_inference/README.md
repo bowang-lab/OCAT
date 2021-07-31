@@ -47,12 +47,12 @@ ZW_db, db_list = OCAT.run_OCAT(ref_data_list, m_list=[50], dim=30, if_inference=
 
 <a name="inference"></a>**Step 2. Run OCAT on the inference dataset**
 
-When an inference dataset comes in, it is projected to the same subspace as the reference dataset through `db_list`, and the predicted labels is based on the model trained using the reference dataset. The labels in the training set can be either the annotated cell types (ground truth) or the predicted cell types based on `ZW_db`. Here we adopt the annotated cell type labels. 
+When an inference dataset comes in, it is projected to the same subspace as the reference dataset through `db_list`, and the predicted labels is based on the model trained using the reference dataset. The labels `labels_db` in the training set can be either the annotated cell types (ground truth) or the predicted cell types based on `ZW_db`. Here we adopt the annotated cell type labels. 
 
 ```python
 labels_true = data['true_labs'].flatten()
 labels_combined = labels_true[ref_index]
 
-ZW_inf, labels = OCAT.run_cell_inference(inf_data_list, ZW_db, labels_combined, db_list)
+ZW_inf, labels = OCAT.run_cell_inference(data_list=inf_data_list, ZW_db=ZW_db, labels_db=labels_combined, db_list=db_list)
 ```
 
