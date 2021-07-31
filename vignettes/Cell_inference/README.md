@@ -1,10 +1,10 @@
 ## Cell inference
-OCAT supports cell inference of new incoming data based on existing reference scRNA-seq dataset.
+OCAT supports immediate cell type inference of incoming data based on existing databases, without re- computing the latent representations by combining the new incoming ("inference") dataset and the existing ("reference") dataset.
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
-- [Step 1. Run OCAT](#run_OCAT)
-- [Step 2. Clustering \& visualization](#clustering)
+- [Step 1. Run OCAT on the reference dataset](#reference)
+- [Step 2. Run OCAT on the inference dataset](#inference)
 
 ```python
 import OCAT
