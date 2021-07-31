@@ -27,6 +27,7 @@ HSMM
 ├── HSMM_label.txt
 ├── HSMM.txt
 ```
+Load the data to python. 
 
 ```python
 import pandas as pd
@@ -39,6 +40,7 @@ data_list = [data]
 ```
 
 <a name="run_OCAT"></a>**Step 1. Run OCAT**
+Extract the OCAT sparse encoding of the raw gene expression matrix. 
 
 ```python
 ZW = OCAT.run_OCAT(data_list, m_list=[40], dim=80)
@@ -46,6 +48,7 @@ ZW = OCAT.run_OCAT(data_list, m_list=[40], dim=80)
 
 <a name="trajectory"></a>**Step 2. Trajectory inference**
 
+Load in the annotated labels.
 ```python
 ## load the annotated labels
 label = pd.read_csv('./HSMM/HSMM_label.txt', delimiter=' ')
@@ -64,8 +67,7 @@ Lineage, root_cluster, cluster_labels, tree = OCAT.compute_lineage(ZW, labels_co
 
 <a name="pseudo"></a>**Step 3. Pseudotime inference**
 
-`OCAT.compute_ptime()` function infers pseudotime for individual cell using the OCAT extracted features and the predicted lineage. `OCAT.draw_Ptime()` function visualizes the inferred lineages and pseudotime.
-
+`OCAT.compute_ptime()` function infers pseudotime for individual cell using the OCAT extracted features and the predicted lineage. 
 ```python
 Ptime, root_cell_list = OCAT.compute_ptime(ZW, labels_combined, Lineage, root_cluster=root_cluster, latent=None)
 ```
