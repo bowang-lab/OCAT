@@ -48,6 +48,9 @@ ZW_db, db_list = OCAT.run_OCAT(ref_data_list, m_list=[50], s_list=None, dim=30, 
 <a name="inference"></a>**Step 2. Run OCAT on the inference dataset**
 
 ```python
+labels_true = data['true_labs'].flatten()
+labels_combined = labels_true[ref_index]
+
 ZW_inf, labels = OCAT.run_cell_inference(inf_data_list, ZW_db, labels_combined, db_list)
 ```
 
