@@ -27,7 +27,7 @@ my_data_list = [in_X.T]
 
 
 ```python
-ZW = OCAT.run_OCAT(my_data_list, m = 125, dim=125)
+ZW = OCAT.run_OCAT(my_data_list, m_list = [125], dim=125)
 ```
 
 <a name="clustering"></a>**Step 4. Visualization**
