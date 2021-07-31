@@ -48,7 +48,7 @@ NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="500" height="500"/>  
 
-<a name="gene_prior"></a>**Step 5. Gene prioritization**
+<a name="gene_prior"></a>**Step 3. Gene prioritization**
 
 ```python
 import matplotlib.pyplot as plt
