@@ -3,10 +3,8 @@ We demonstrate how OCAT sparsely encodes single-cell gene expression data using 
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
-- [Step 1. Data pre-processing](#pre_processing)
-- [Step 2. Dimension reduction](#dim_reduct)
-- [Step 3. Contruct bipartite graph through ghost cells](#ghost_cell)
-- [Step 4. Clustering \& visualization](#clustering)
+- [Step 1. Run OCAT](#run_ocat)
+- [Step 2. Clustering \& visualization](#clustering)
 - [Step 5. Gene prioritization](#gene_prior)
 
 ```python
@@ -24,30 +22,18 @@ in_X = csr_matrix(data['in_X'])
 data_list = [in_X]
 ```
 
-<a name="pre_processing"></a>**Step 1. Data pre-processing**
+<a name="pre_processing"></a>**Step 1. Run OCAT**
 
-The gene expression data is first pre-processed through log-transformation and normalization (using l2-norm). 
-
-```python
-data_list = OCAT.preprocess(data_list, log_norm=True, l2_norm=True)
-```
-<a name="dim_reduct"></a>**Step 2. Dimension reduction**
-
-`dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method `mode = 'FSM'`, but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
+The `run_OCAT` function automates 
+1. pre-processing of the raw gene expression matrix through log-transformation and normalization (using l2-norm) 
+2. reduces the dimension of the raw gene expression to `dim = 30` subspace
+3. returns `ZW`, the OCAT sparse encoding of the integrated datasets with `m = 50` "ghost" cells
 
 ```python
-data_list = OCAT.apply_dim_reduct(data_list, dim = 30, mode='FSM', random_seed=42)
+ZW = OCAT.run_OCAT(data_list, m_list = [50], dim=30, p=0.3, log_norm=True, l2_norm=True)
 ```
 
-<a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
-
-OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
-
-```python
-ZW = OCAT.sparse_encoding_integration(data_list, m_list = [50])
-```
-
-<a name="clustering"></a>**Step 4. Clustering \& visualization**
+<a name="clustering"></a>**Step 2. Clustering \& visualization**
 
 ```python
 ## import the annotated labels for the mouse cortex data
