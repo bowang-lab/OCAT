@@ -50,10 +50,14 @@ import numpy as np
 ```
 
 <a name="pre_processing"></a>**Step 1. Run OCAT**
-OCAT automates (i) pre-processing of the raw gene expression matrix through log-transformation and normalization (using l2-norm); (ii) reduces the dimension of the raw gene expression to `dim` subspace;
+
+The `run_OCAT` function automates 
+1. pre-processing of the raw gene expression matrix through log-transformation and normalization (using l2-norm) 
+2. reduces the dimension of the raw gene expression to `dim = 60` subspace
+3. returns `ZW`, the OCAT sparse encoding of the integrated datasets with `m = 65` "ghost" cells in each dataset
 
 ```python
-ZW = OCAT.sparse_encoding_integration(data_list, m_list = [100, 100, 100, 100, 100])
+ZW = OCAT.run_OCAT(data_list, m_list=[65, 65, 65, 65, 65], dim=60, p=0.3, log_norm=True, l2_norm=True)
 ```
 <a name="clustering"></a>**Step 2. Clustering \& visualization**
 
