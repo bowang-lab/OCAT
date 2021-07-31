@@ -40,12 +40,14 @@ inf_data_list = [inf_data]
 
 <a name="reference"></a>**Step 1. Run OCAT on the reference dataset**
 
-
+On the reference dataset, OCAT extracts its sparse encoding and saves the projection of the raw counts to `d`-dimensional subspace. 
 ```python
-ZW_db, db_list = OCAT.run_OCAT(ref_data_list, m_list=[50], s_list=None, dim=30, p=0.3, log_norm=True, l2_norm=True, if_inference=True, random_seed=42)
+ZW_db, db_list = OCAT.run_OCAT(ref_data_list, m_list=[50], dim=30, if_inference=True)
 ```
 
 <a name="inference"></a>**Step 2. Run OCAT on the inference dataset**
+
+When an inference dataset comes in, it is projected to the same subspace as the reference dataset through `db_list`, and the predicted labels is based on the model trained using the reference dataset. The labels in the training set can be either the annotated cell types (ground truth) or the predicted cell types based on `ZW_db`. Here we adopt the annotated cell type labels. 
 
 ```python
 labels_true = data['true_labs'].flatten()
