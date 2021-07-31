@@ -23,27 +23,11 @@ in_X = csr_matrix(my_data['A'])
 my_data_list = [in_X.T]
 ```
 
-<a name="pre_processing"></a>**Step 1. Data pre-processing**
+<a name="pre_processing"></a>**Step 1. Run OCAT**
 
-The gene expression data is first pre-processed through log-transformation and normalization (using l2-norm). 
-
-```python
-data_list = OCAT.preprocess(data_list, log_norm=True, l2_norm=True)
-```
-<a name="dim_reduct"></a>**Step 2. Dimension reduction**
-
-`dim` is the dimension of the subspace that the original gene expression vector is reduced to. OCAT adopts a fast and efficient dimension reduction method `mode = 'FSM'`, but the commonly used princial component analysis (`mode= 'PCA'`) is also implemented. 
 
 ```python
-data_list = OCAT.apply_dim_reduct(data_list, dim = 125, mode='FSM', random_seed=42)
-```
-
-<a name="ghost_cell"></a>**Step 3. Contruct bipartite graph through ghost cells**
-
-OCAT constructs a sparsified bipartite graph to embed the gene expression of each single cell. `m` is the number of ghost cells that each single cell connects to. 
-
-```python
-ZW = OCAT.sparse_encoding_integration(data_list, m = 125)
+ZW = OCAT.run_OCAT(my_data_list, m = 125, dim=125)
 ```
 
 <a name="clustering"></a>**Step 4. Visualization**
