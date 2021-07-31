@@ -17,7 +17,7 @@ $ pip install OCAT
 ```
 
 ## :heavy_plus_sign: Tutorials
-* [Clustering of Mouse Brain scRNA-seq Data (Zeisel et al. 2015)](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/README.md)
+* [Clustering and Differential Gene Analysis of Mouse Brain scRNA-seq Data (Zeisel et al. 2015)](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/README.md)
 * [Integration of 5 Human Pancreatic scRNA-seq Datasets](https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/README.md)
 * [Clustering of Spatial scRNA-seq Data](https://github.com/bowang-lab/OCAT/tree/master/vignettes/Spatial/README.md)
 * [Trajectory and pseudotime inference using HSMM dataset](https://github.com/bowang-lab/OCAT/tree/master/vignettes/trajectory/Trajectory_tutorial.md)
