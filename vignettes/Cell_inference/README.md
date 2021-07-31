@@ -21,20 +21,20 @@ in_X = csr_matrix(data['in_X'])
 data_list = [in_X]
 ```
 
-<a name="run_OCAT"></a>**Step 1. Run OCAT**
+<a name="reference"></a>**Step 1. Run OCAT on the reference dataset**
 
 
 ```python
-ZW = OCAT.run_OCAT(my_data_list, m_list = [125], dim=125)
+ZW_db, db_list = OCAT.run_OCAT(data_list, m_list=[50], s_list=None, dim=30, p=0.3, log_norm=True, l2_norm=True, if_inference=True, random_seed=42)
 ```
 
-<a name="clustering"></a>**Step 2. Clustering \& Visualization**
+<a name="inference"></a>**Step 2. Run OCAT on the inference dataset**
 
 ```python
-from sklearn.cluster import KMeans
+ZW, labels = OCAT.run_cell_inference(data_list, ZW_db, labels_combined, db_list)
+ZW = OCAT.run_OCAT(data_list, m_list=[50], s_list=None, dim=30, p=0.3, log_norm=True, l2_norm=True, if_inference=False, random_seed=42)
 
-pca_ground_ZW = KMeans(n_clusters=15, n_init=20).fit(ZW)
-labels_pred = pca_ground_ZW.labels_
+out = OCAT.evaluate_clusters(ZW)
 ```
 
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Spatial/OCAT_spatial_v3.png" width="400" height="400" />  
