@@ -5,7 +5,7 @@ We demonstrate how OCAT sparsely encodes single-cell gene expression data using 
 - [Step 0. Import data](#data_import)
 - [Step 1. Run OCAT](#run_ocat)
 - [Step 2. Clustering \& visualization](#clustering)
-- [Step 5. Gene prioritization](#gene_prior)
+- [Step 3. Gene prioritization](#gene_prior)
 
 ```python
 import OCAT
@@ -46,7 +46,7 @@ labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_true))
 from sklearn.metrics.cluster import normalized_mutual_info_score
 NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/Zeisel_clustering_v2.png" width="500" height="500"/>  
+<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/OCAT_new_zeisel.pdf" width="500" height="500"/>  
 
 <a name="gene_prior"></a>**Step 3. Gene prioritization**
 
