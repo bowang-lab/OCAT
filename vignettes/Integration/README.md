@@ -61,13 +61,14 @@ ZW = OCAT.run_OCAT(data_list, m_list=[65, 65, 65, 65, 65], dim=60, p=0.3, log_no
 ```
 <a name="clustering"></a>**Step 2. Clustering \& visualization**
 
+Import the annotated labels and create batch labels for the pancreas data
 ```python
-## import the annotated labels for the pancreas data
+## import the annotated labels
 label_path = './Pancreas/label'
 label_list = [np.load(os.path.join(label_path, i + '_label.npy'), allow_pickle=True) for i in file_list]
 labels_combined = np.concatenate(label_list, axis=0)
 
-## create dataset labels for the pancreas data
+## create batch labels
 def create_ds_label(label_list, file_list):
     label_ds_list = []
     for i, name in enumerate(file_list):
@@ -77,9 +78,15 @@ def create_ds_label(label_list, file_list):
 
 label_ds_list = create_ds_label(label_list, file_list)
 ds_combined = np.concatenate(label_ds_list, axis=0)
+```
 
-## evaluate the clustering performance of the predicted labels
-num_cluster = len(np.unique(labels_combined))
-labels_pred = evaluate(ZW, n_cluster=n_cluster)
+Evaluate the clustering performance of the predicted labels
+```python
+from sklearn.metrics.cluster import normalized_mutual_info_score
+labels_pred = OCAT.evaluate_clusters(ZW, n_cluster=len(np.unique(labels_combined)))
+batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_combined)))
+
+NMI_cell_type = normalized_mutual_info_score(labels_combined, labels_pred)
+NMI_batch = normalized_mutual_info_score(ds_combined, batch_pred)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="1000" height="400" />  
