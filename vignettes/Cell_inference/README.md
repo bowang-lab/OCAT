@@ -30,7 +30,7 @@ random.shuffle(total_index)
 
 ref_index = total_index[:round(0.9*in_X.shape[0])]
 inf_index = total_index[round(0.9*in_X.shape[0]):]
-random.sample(range(in_X.shape[0]), k=round(0.9*in_X.shape[0]))
+
 ref_data = in_X[ref_index,:]
 ref_data_list = [ref_data]
 
