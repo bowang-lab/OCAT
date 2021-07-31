@@ -55,8 +55,11 @@ import matplotlib.pyplot as plt
 
 ## import the gene labels of the mouse cortex scRNA-seq data
 gene_label = data['label2'].flatten()
-gene_df, fig = OCAT.calculate_marker_gene(in_X.T, labels_pred, 5, gene_label, vmin=0, vmax=5)
+gene_df, fig = OCAT.calculate_marker_gene(data=in_X.T, labels=labels_pred, topn=5, gene_labels=gene_label)
+
+## save the top 5 most differential genes for each cell type group
 gene_df.to_csv('marker_gene.csv')
+## save the heatmap visualizing the most differential genes for each cell type group
 plt.savefig('marker_gene.png')
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/img/marker_gene_JAN31.png" width="500" height="500"/>
