@@ -1,4 +1,4 @@
-## Cell inference
+## Cell inference using the mouse cortex dataset
 OCAT supports immediate cell type inference of incoming data based on existing databases, without re- computing the latent representations by combining the new incoming ("inference") dataset and the existing ("reference") dataset.
 
 ## Table of Contents
@@ -13,11 +13,12 @@ import numpy as np
 
 <a name="data_import"></a>**Step 0. Import data**     
 ```python
-from scipy.sparse import csc_matrix
+from scipy.io import loadmat
+from scipy.sparse import csr_matrix
 
-my_data = np.load('brain_spatial.npz')
-in_X = csc_matrix(my_data['data'])
-my_data_list = [in_X.T]
+data = loadmat('./Test_5_Zeisel.mat')
+in_X = csr_matrix(data['in_X'])
+data_list = [in_X]
 ```
 
 <a name="run_OCAT"></a>**Step 1. Run OCAT**
