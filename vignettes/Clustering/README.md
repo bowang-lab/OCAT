@@ -46,7 +46,7 @@ labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_true))
 from sklearn.metrics.cluster import normalized_mutual_info_score
 NMI_cell_type = normalized_mutual_info_score(labels_true, labels_pred)
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/zeisel_github.pdf" width="500" height="500"/>  
+<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Clustering/zeisel_github.png" width="500" height="500"/>  
 
 <a name="gene_prior"></a>**Step 3. Gene prioritization**
 
