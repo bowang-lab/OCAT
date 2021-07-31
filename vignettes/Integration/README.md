@@ -89,4 +89,5 @@ batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_combine
 NMI_cell_type = normalized_mutual_info_score(labels_combined, labels_pred)
 NMI_batch = normalized_mutual_info_score(ds_combined, batch_pred)
 ```
+
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="1000" height="400" />  
