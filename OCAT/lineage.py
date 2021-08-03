@@ -3,17 +3,13 @@ import numpy as np
 from sklearn.cluster import KMeans
 import matplotlib
 import matplotlib.pyplot as plt
-#from matplotlib.path import Path
-#import matplotlib.patches as patches
 from scipy.spatial import distance
 import networkx as nx
 import time
-#from scipy.interpolate import interp1d, UnivariateSpline
-#from scipy.optimize import curve_fit
-#from statsmodels.nonparametric.smoothers_lowess import lowess
-#from scipy.spatial.transform import Rotation as R
-#from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
 def estimate_num_cluster(Z):
     n_clusters = int(Z.shape[0]/10)
@@ -92,7 +88,7 @@ def compute_lineage(Z, cluster_label = None, root_cluster = None, root_cell = No
                 node_count += 1
     return pred, root_cluster, cluster_label, Tree
 
-def compute_ptime(Z, cluster_label, lineage, root_cluster, latent, root_cell=None):
+def compute_ptime(Z, cluster_label, lineage, root_cluster, root_cell=None):
     t1 = time.time()
     uni_lab = np.unique(cluster_label)
     num_cluster = len(uni_lab)
@@ -159,3 +155,85 @@ def compute_ptime(Z, cluster_label, lineage, root_cluster, latent, root_cell=Non
             cluster_to_explore.append(i)
     Ptime = (cell_dis-np.min(cell_dis))/(np.max(cell_dis)-np.min(cell_dis))
     return Ptime, root_cell_list
+
+def draw_Lineage(Lineage, cluster_label, ax):
+    uni_lab = np.unique(cluster_label)
+    rootedTree = nx.DiGraph()
+    for i in range(len(np.where(Lineage!=-1)[0])):
+        rootedTree.add_edge(uni_lab[Lineage[Lineage != -1][i]], uni_lab[np.where(Lineage!=-1)[0][i]])
+    nx.draw(rootedTree,pos=nx.planar_layout(rootedTree, 1), ax=ax)
+    nx.draw_networkx_labels(rootedTree,pos=nx.planar_layout(rootedTree), ax=ax)
+    return ax
+
+def func(x, a, b, c, d):
+    return a*(x**3) + b*(x**2) + c*x + d
+
+def fit_XY(curr_val, cluster_label, curr_cluster_center, latent):
+    idx = np.where(np.isin(cluster_label, curr_val))[0]
+    curr_latent = latent[idx, :]
+    sigma = np.ones(len(idx)+len(curr_val))
+    sigma[np.arange(len(curr_val))] = 0.01
+    y_data = np.concatenate((curr_cluster_center, curr_latent), axis=0)
+    popt, _ = curve_fit(func, y_data[:,0], y_data[:,1], sigma=sigma)
+    data_y = np.zeros((4,2))
+    data_y[:,0] = np.linspace(curr_cluster_center[0,0], curr_cluster_center[-1,0], 4)
+    data_y[:,1] = func(data_y[:,0], *popt)
+    data_y[0,:] = curr_cluster_center[0,:]
+    data_y[-1,:] = curr_cluster_center[-1,:] 
+    popt, _ = curve_fit(func, data_y[:,0], data_y[:,1])
+    return popt
+
+def fit_piecewise(uni_lab, Ptime, latent, cluster_label, ax, rootedTree, root_cluster):
+    num_cluster = len(uni_lab)
+    lab_idx_dict = dict(zip(uni_lab, np.arange(num_cluster)))
+    cluster_center_list = np.empty((num_cluster, 2))
+    ptime_center_list = np.empty(num_cluster)
+    for i in uni_lab:
+        cluster_center_list[lab_idx_dict.get(i), :] = np.mean(latent[cluster_label==i], axis=0)
+        ptime_center_list[lab_idx_dict.get(i)] = np.mean(Ptime[cluster_label==i])
+    cluster_to_explore = []
+    cluster_to_explore.append(root_cluster)
+    while(len(cluster_to_explore) != 0):
+        curr_cluster = cluster_to_explore.pop(0)
+        for i in rootedTree.neighbors(curr_cluster):
+            curr_val = [curr_cluster, i]
+            curr_list = [lab_idx_dict.get(curr_cluster), lab_idx_dict.get(i)]
+            curr_cluster_center = cluster_center_list[curr_list, :]
+            curr_ptime_center = ptime_center_list[curr_list]
+            if_fit_XY = True
+            if if_fit_XY:
+                popt = fit_XY(curr_val, cluster_label, curr_cluster_center, latent)
+                line_space = np.linspace(curr_cluster_center[0,0], curr_cluster_center[-1,0])
+                ax.plot(line_space, func(line_space, *popt), 'chocolate', lw=3)
+            else:
+                popt0, popt1 = fit_XY_ptime(curr_val, cluster_label, curr_cluster_center, latent, Ptime, curr_ptime_center)
+                line_space = np.linspace(curr_ptime_center[0], curr_ptime_center[-1])
+                ax.plot(func(line_space, *popt0), func(line_space, *popt1), 'chocolate', lw=3)
+            cluster_to_explore.append(curr_val[-1])
+
+def plot_lineage_ptime(Ptime, Lineage, root_cell_list, cluster_label, latent):
+    num_cell = len(cluster_label)
+    uni_lab = np.unique(cluster_label)
+    num_cluster = len(uni_lab)
+    rootedTree = nx.DiGraph()
+    for i in range(len(np.where(Lineage!=-1)[0])):
+        rootedTree.add_edge(uni_lab[Lineage[Lineage != -1][i]], uni_lab[np.where(Lineage!=-1)[0][i]])
+    root_cluster = uni_lab[np.where(Lineage == -1)[0]][0]
+
+    fig = plt.figure(figsize=(12, 6))
+    ax0 = fig.add_subplot(1, 2, 1) 
+    ax0 = draw_Lineage(Lineage, cluster_label, ax0)
+    ax1 = fig.add_subplot(1, 2, 2)
+    fit_piecewise(uni_lab, Ptime, latent, cluster_label, ax1, rootedTree, root_cluster)
+    average=np.zeros((num_cluster,2))
+    for i in range(num_cluster):
+        average[i][0] = np.mean(latent[cluster_label == uni_lab[i], 0])
+        average[i][1] = np.mean(latent[cluster_label == uni_lab[i], 1])
+    ax1.scatter(latent[:,0], latent[:,1], s=30, cmap='YlGnBu', c=Ptime)
+    for i in range(num_cluster):
+        if Lineage[i] != -1:
+            ax1.annotate(uni_lab[i], (average[i, 0], average[i, 1]), size='x-large')
+        else:
+            label = 'root-' + str(uni_lab[i])
+            ax1.annotate(label, xy=(average[i,0]*1.1,average[i,1]),size = 'x-large')
+    return fig
