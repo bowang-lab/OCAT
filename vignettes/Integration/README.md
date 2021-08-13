@@ -84,7 +84,7 @@ Evaluate the clustering performance of the predicted labels
 ```python
 from sklearn.metrics.cluster import normalized_mutual_info_score
 labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_combined)))
-batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_combined)))
+batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(ds_combined)))
 
 NMI_cell_type = normalized_mutual_info_score(labels_combined, labels_pred)
 NMI_batch = normalized_mutual_info_score(ds_combined, batch_pred)
