@@ -259,6 +259,13 @@ def evaluate_clusters(Z, num_cluster=None, n_init=20):
     clusters = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
     return clusters.labels_
 
+def evaluate_clusters_2(Z, num_cluster=None, n_init=20):
+    if num_cluster is None:
+        cluster_label = estimate_num_cluster(Z)
+        num_cluster = len(np.unique(cluster_label))
+    clusters = KMeans(n_clusters=num_cluster, n_init=n_init).fit(Z)
+    return clusters.labels_, num_cluster
+
 def plot_umap(Z, labels):
     reducer = umap.UMAP()
     Z_scaled = StandardScaler().fit_transform(Z)

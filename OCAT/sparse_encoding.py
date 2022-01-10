@@ -1,8 +1,11 @@
 import numpy as np
+import pandas as pd
 import os
 import faiss
 from .fast_similarity_matching import FSM
+from .utils import m_estimate, dim_estimate, apply_dim_reduct, apply_dim_reduct_inference, preprocess, evaluate_clusters_2
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
+from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutual_info_score, normalized_mutual_info_score
 from sklearn.cluster import KMeans
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
@@ -10,7 +13,6 @@ from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 import OCAT.example as example
-from .utils import m_estimate, dim_estimate, apply_dim_reduct, apply_dim_reduct_inference, preprocess
 from sklearn import svm
 
 ##############################################
@@ -279,3 +281,67 @@ def post_processing_pca(Z, topk=20):
     pca = PCA(n_components=topk, svd_solver='arpack')
     pca_result = pca.fit_transform(Z)
     return pca_result
+
+def tune_hyperparameters(data_list, if_tune_m=True, m_range=None, if_tune_dim=True, dim_range=None, if_tune_p=False, p_range=None, log_norm=True, l2_norm=True, true_labels=None, verbose=True):
+    # Specify data normalization
+    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    num_datasets = len(data_list)
+    # Impute m if None
+    if m_range==None:
+        m_est = max(m_estimate(data_list))
+        if if_tune_m:
+            m_range = [m_est+i*5 for i in range(-3, 3)]
+        else:
+            m_range = [m_est]
+            print('WARNING no value of m is given, default m={} for the dataset(s) from estimation.'.format(m_est))
+    # Impute dim if None
+    if dim_range==None:
+        dim_est = dim_estimate(data_list)
+        if if_tune_dim:
+            dim_range = [dim_est+i*10 for i in range(-2, 2)]
+        else:
+            dim_range = [dim_est]
+            print('WARNING no value of dim is given, default dim={} for the dataset(s) from estimation.'.format(dim_est))
+    # Impute p if None
+    if p_range==None:
+        if if_tune_p:
+            p_range = [0.1, 0.3, 0.5]
+        else:
+            p_range = [0.3]
+            print('WARNING no value of p is given, default p=0.3 for the dataset(s) from estimation.')
+    # If ground truth given, find n_clusters
+    if true_labels is not None:
+        n_clusters = len(np.unique(true_labels))
+    out = []
+    if verbose:
+        print('Testing hyperparameters in the range below:')
+        print('Range for m: {}'.format(m_range))
+        print('Range for dim: {}'.format(dim_range))
+        print('Range for p: {}'.format(p_range))
+    for m in m_range:
+        for n_dim in dim_range:
+            for p in p_range:
+                if m*p < 3:
+                    print('Skip m={} and p={} as the number of ghost cells is smaller than 3.'.format(m, p))
+                    continue
+                ZW = run_OCAT(data_list=data_list, m_list=[m]*num_datasets, dim=n_dim, p=p, log_norm=False, l2_norm=False)
+                if true_labels is None:
+                    labels_pred, n_clusters = evaluate_clusters_2(ZW)
+                    sil_score = silhouette_score(ZW, labels_pred)
+                    out.append([m, n_dim, p, n_clusters, sil_score])
+                else:
+                    labels_pred, _ = evaluate_clusters_2(ZW, num_cluster=n_clusters)
+                    NMI_cell = normalized_mutual_info_score(true_labels, labels_pred)
+
+                    AMI_cell = adjusted_mutual_info_score(true_labels, labels_pred)
+
+                    ARI_cell = adjusted_rand_score(true_labels, labels_pred)
+                    out.append([m, n_dim, p, NMI_cell, AMI_cell, ARI_cell])
+    out = np.array(out)
+    if true_labels is not None:
+        df = pd.DataFrame(data=out, columns=['m', 'n_dim', 'p', 'NMI_score', 'AMI_score', 'ARI_score'])
+    else:
+        df = pd.DataFrame(data=out, columns=['m', 'n_dim', 'p', 'n_clusters', 'silhoutte_score'])
+    if verbose:
+        print(df)
+    return df
