@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import faiss
 from .fast_similarity_matching import FSM
-from .utils import m_estimate, dim_estimate, apply_dim_reduct, apply_dim_reduct_inference, preprocess, evaluate_clusters_2
+from .utils import m_estimate, dim_estimate, apply_dim_reduct, apply_dim_reduct_inference, preprocess, evaluate_clusters
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutual_info_score, normalized_mutual_info_score
 from sklearn.cluster import KMeans
@@ -326,11 +326,11 @@ def tune_hyperparameters(data_list, if_tune_m=True, m_range=None, if_tune_dim=Tr
                     continue
                 ZW = run_OCAT(data_list=data_list, m_list=[m]*num_datasets, dim=n_dim, p=p, log_norm=False, l2_norm=False)
                 if true_labels is None:
-                    labels_pred, n_clusters = evaluate_clusters_2(ZW)
+                    labels_pred, n_clusters = evaluate_clusters(ZW, return_num_cluster=True)
                     sil_score = silhouette_score(ZW, labels_pred)
                     out.append([m, n_dim, p, n_clusters, sil_score])
                 else:
-                    labels_pred, _ = evaluate_clusters_2(ZW, num_cluster=n_clusters)
+                    labels_pred = evaluate_clusters(ZW, num_cluster=n_clusters)
                     NMI_cell = normalized_mutual_info_score(true_labels, labels_pred)
 
                     AMI_cell = adjusted_mutual_info_score(true_labels, labels_pred)
