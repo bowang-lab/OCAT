@@ -89,7 +89,7 @@ batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(ds_combined)))
 NMI_cell_type = normalized_mutual_info_score(labels_combined, labels_pred)
 NMI_batch = normalized_mutual_info_score(ds_combined, batch_pred)
 ```
-Evaluate the clustering performance of the predicted labels
+UMAP Visualization
 ```python
 obs = pd.DataFrame({'cell_type':labels_combined, 'batch':ds_combined})
 adata2 = sc.AnnData(X=ZW, obs=obs)
