@@ -1,5 +1,5 @@
 # OCAT - One Cell At A Time
-OCAT provides a fast and memory-efficient framework for analyzing and integrating large-scale scRNA-seq data. [Our paper] (https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02659-1) is now published in Genome Biology!!!
+OCAT provides a fast and memory-efficient framework for analyzing and integrating large-scale scRNA-seq data. [Our paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02659-1) is now published in Genome Biology!!!
 
 Please check [rOCAT](https://github.com/bowang-lab/rOCAT) to install OCAT in R! 
 
