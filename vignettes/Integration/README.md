@@ -89,5 +89,12 @@ batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(ds_combined)))
 NMI_cell_type = normalized_mutual_info_score(labels_combined, labels_pred)
 NMI_batch = normalized_mutual_info_score(ds_combined, batch_pred)
 ```
-
+Evaluate the clustering performance of the predicted labels
+```python
+obs = pd.DataFrame({'cell_type':labels_combined, 'batch':ds_combined})
+adata2 = sc.AnnData(X=ZW, obs=obs)
+sc.pp.neighbors(adata2, use_rep='X')
+sc.tl.umap(adata2)
+sc.pl.umap(adata2, color=['cell_type', 'batch'], save=True)
+```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="1000" height="400" />  
