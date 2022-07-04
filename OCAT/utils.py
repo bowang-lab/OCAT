@@ -272,6 +272,10 @@ def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=F
         data_list = [np.nan_to_num(svd.transform(i)) for i in data_list]
     return data_list
 
+def apply_dim_reduct_inference(data_list, Wm):
+    data_list = [i.dot(Wm) for i in data_list]
+    return data_list
+
 ##############################################
 # In: Z                              -- OCAT features
 #     num_cluster                    -- num of clusters desired
