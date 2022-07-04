@@ -91,7 +91,7 @@ def TFIDF(data, type, scale_factor=10000):
     else:
         return data
 
-def preprocess(data_list, log_norm, l2_norm, tfidf):
+def preprocess(data_list, log_norm, l2_norm, tfidf=None):
     assert len(data_list) > 0, "Data list cannot be empty"
     # Check data format, must be sparse.csr_matrix or np.ndarray
     if isinstance(data_list[0], scipy.sparse.csr_matrix):
