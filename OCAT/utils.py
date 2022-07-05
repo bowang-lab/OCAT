@@ -64,6 +64,7 @@ def l2_normalization(data_list, is_memory=True):
     return data_list
 
 def TFIDF(data, type, scale_factor=10000):
+    data = data.T
     nCells = data.shape[1]
     nPeaks = data.shape[0]
     peak_sum = data.sum(axis=1)
@@ -91,8 +92,9 @@ def TFIDF(data, type, scale_factor=10000):
     else:
         return data
 
-def preprocess(data_list, log_norm, l2_norm, tfidf=None):
+def preprocess(data_list, log_norm, l2_norm, tfidf=0):
     assert len(data_list) > 0, "Data list cannot be empty"
+    assert tfidf in [0,1,2,3,4], "tfiddf can only be 0,1,2,3,4"
     # Check data format, must be sparse.csr_matrix or np.ndarray
     if isinstance(data_list[0], scipy.sparse.csr_matrix):
         is_memory=True
@@ -102,7 +104,7 @@ def preprocess(data_list, log_norm, l2_norm, tfidf=None):
         sys.exit("Data matrix must be np.ndarray or sparse.csc_matrix")
     # Perform normalization
     if tfidf:
-        data_list = [TFIDF(i, type=tfidf) for i in data_list]
+        data_list = [TFIDF(i, type=tfidf).T for i in data_list]
     if log_norm:
         data_list = normalize_data(data_list, is_memory)
     if l2_norm:
