@@ -94,7 +94,7 @@ def TFIDF(data, type, scale_factor=10000):
 
 def preprocess(data_list, log_norm, l2_norm, tfidf=0):
     assert len(data_list) > 0, "Data list cannot be empty"
-    assert tfidf in [0,1,2,3,4], "tfiddf can only be 0,1,2,3,4"
+    assert tfidf in [0,1,2,3,4], "tfidf can only be one of 0,1,2,3,4"
     # Check data format, must be sparse.csr_matrix or np.ndarray
     if isinstance(data_list[0], scipy.sparse.csr_matrix):
         is_memory=True
