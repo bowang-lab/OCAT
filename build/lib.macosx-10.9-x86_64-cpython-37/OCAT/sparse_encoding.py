@@ -217,23 +217,43 @@ def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_
 #       l2_norm                                -- if apply l2 norm
 #       if_inference                           -- if prepare for cell inference
 #       random_seed                            -- random seed
-#       cn                                     -- rounds of optimization
+#       labels_true                            -- the true labels for each dataset in the data_list
 # Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
 #       db_list                                -- anchor_list, s_list, W_anchor, Wm
 #                                                 from reference dataset for cell inference
 ###################################################################
-def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, tfidf=0, mode='FSM', if_inference=False, random_seed=42):
-    if m_list == None:
-        m_list = m_estimate(data_list)
-    if s_list ==None:
-        s_list = [round(p*m) for m in m_list]
-    if dim == None:
-        dim = dim_estimate(data_list)
+def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, tfidf=0, mode='FSM', if_inference=False, random_seed=42, labels_true=None):
+    if labels_true == None:
+        if m_list == None:
+            m_list = m_estimate(data_list)
+        if s_list ==None:
+            s_list = [round(p*m) for m in m_list]
+        if dim == None:
+            dim = dim_estimate(data_list)
+
     data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm, tfidf=tfidf)
     if if_inference:
         data_list, Wm = apply_dim_reduct(data_list, dim=dim, mode=mode, random_seed=random_seed)
+        if labels_true:
+            data_combined = np.concatenate(data_list, axis=0)
+            labels_true_combined = np.concatenate(labels_true, axis=0)
+            data_list = [data_combined[labels_true_combined==i,:] for i in np.unique(labels_true_combined)]
+            m_sum = np.sum(m_list)
+            # extract the cell numbers in each true cluster
+            m_list = [data_list[i].shape for i in range(len(np.unique(labels_true_combined)))]
+            # assign m based on the cell proportion
+            total_cell_num = data_combined.shape[0]
+            m_list = [int(m_sum*i[0]/total_cell_num) if int(m_sum*i[0]/total_cell_num)>1 else 1 for i in m_list]
+
+            s_list = [round(p*m) for m in m_list]
+            s_list = [np.sum(s_list)]
+            print('New m_list based on true cell type cluster: ',m_list)
+
         ZW, anchor_list, s_list, W_anchor = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True)
-        db_list = [anchor_list, s_list, W_anchor, Wm]
+        if labels_true: 
+            db_list = [anchor_list, s_list, W_anchor, Wm, m_list] 
+        else:
+            db_list = [anchor_list, s_list, W_anchor, Wm]
         return ZW, db_list
     else:
         data_list, _ = apply_dim_reduct(data_list, dim=dim, mode=mode, random_seed=random_seed)
@@ -242,17 +262,24 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
 
 ####################################################################
 # In:   data_list       [(a,dim)...(z,dim)]    -- list of inference datasets (dim PCs)
-#       ZW_db                                  -- OCAT features of the reference dataset
 #       labels_db                              -- cell type annotations from reference dataset
 #       db_list                                -- reference db info returned from run_OCAT
+#       true_known                             -- if the true labels for reference db is known
+#       ZW_db                                  -- OCAT features of the reference dataset
 #       log_norm                               -- if apply log norm
 #       l2_norm                                -- if apply l2 norm
 #       cn                                     -- rounds of optimization
 # Out:  ZW              (a+...+z, m)           -- OCAT features of the inference dataset
 #       labels                                 -- inferred cell type labels from inference dataset
 ###################################################################
-def run_cell_inference(data_list, ZW_db, labels_db, db_list, log_norm=True, l2_norm=True, cn=5):
-    [anchor_list, s_list, W_anchor, Wm] = db_list
+def run_cell_inference(data_list, labels_db, db_list, true_known=False, ZW_db=None, log_norm=True, l2_norm=True, cn=5):
+
+    if true_known:
+        [anchor_list, s_list, W_anchor, Wm, m_list] = db_list
+    else:
+        assert ZW_db!=None, "Must input ZW_db if the reference datasets has no true labels"
+        [anchor_list, s_list, W_anchor, Wm] = db_list
+
     data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
     data_list = apply_dim_reduct_inference(data_list, Wm)
     Z_list = []
@@ -264,12 +291,21 @@ def run_cell_inference(data_list, ZW_db, labels_db, db_list, log_norm=True, l2_n
         dataset_Z = np.concatenate(dataset_Z_list, axis=1)
         Z_list.append(dataset_Z)
     Z = np.nan_to_num(np.concatenate(Z_list, axis=0))
-    ZW = np.matmul(Z, W_anchor)
-    ZW = norm(np.nan_to_num(ZW))
 
-    clf = SVC(random_state=42)
-    clf.fit(ZW_db, labels_db)
-    labels = clf.predict(ZW)
+    if true_known:
+        all_index = np.cumsum([0]+ m_list)
+        anchor_num_index = list(zip(all_index[:len(all_index)-1], all_index[1:]))
+        ## add up all the weights for the each true cluster and choose the cluster with max as assigned label
+        labels = np.argmax([[np.sum(data[x:y]) for x,y in anchor_num_index] for data in Z],axis=1)
+        labels = np.unique(labels_db)[labels]
+        return Z, labels
+    else:
+        ZW = np.matmul(Z, W_anchor)
+        ZW = norm(np.nan_to_num(ZW))
+
+        clf = SVC(random_state=42)
+        clf.fit(ZW_db, labels_db)
+        labels = clf.predict(ZW)
     return ZW, labels
 
 def post_processing_pca(Z, topk=20):
