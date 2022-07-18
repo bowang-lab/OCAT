@@ -28,18 +28,6 @@ from .lineage import estimate_num_cluster
 import matplotlib.pyplot as plt
 
 
-def order_genes(data_list):
-    assert isinstance(data_list[0],pd.DataFrame), "No peaks or genes name provided; need a dataframe"
-    genes = set(data_list[0].columns)
-    for p in data_list[1:]:
-        assert isinstance(p,pd.DataFrame), "No peaks or genes name provided; need a dataframe"
-        genes.intersection_update(set(p.columns))
-    assert len(genes)>0, "No Common Gene exists in All Matrices"
-    genes = sorted(genes)
-    data_list = [p[genes] for p in data_list]
-    return data_list
-
-
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
         if is_memory:
