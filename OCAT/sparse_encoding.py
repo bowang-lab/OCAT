@@ -185,11 +185,14 @@ def norm(Z):
 #       p                                      -- percentage of NNs to consider
 #       cn                                     -- rounds of optimization
 #       if_inference                           -- flag for cell inference
+#       true_known                             -- flag for true labels known
 # Out:  ZW              (a+...+z, m)           -- OCAT feature matrix
 ###################################################################
-def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_inference=True):
+def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_inference=True, true_known=False):
     # find anchors
     anchor_list = find_anchors(data_list, m_list)
+    if true_known:
+        anchor_list = [np.concatenate(anchor_list,axis=0)]
     # construct sparse anchor graph
     Z_list = []
     for i, dataset in enumerate(data_list):
@@ -223,18 +226,19 @@ def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_
 #                                                 from reference dataset for cell inference
 ###################################################################
 def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, tfidf=0, mode='FSM', if_inference=False, random_seed=42, labels_true=None):
-    if labels_true == None:
-        if m_list == None:
-            m_list = m_estimate(data_list)
-        if s_list ==None:
-            s_list = [round(p*m) for m in m_list]
-        if dim == None:
-            dim = dim_estimate(data_list)
+    if m_list == None:
+        m_list = m_estimate(data_list)
+    if s_list ==None:
+        s_list = [round(p*m) for m in m_list]
+    if dim == None:
+        dim = dim_estimate(data_list)
 
     data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm, tfidf=tfidf)
     if if_inference:
         data_list, Wm = apply_dim_reduct(data_list, dim=dim, mode=mode, random_seed=random_seed)
+        true_known = False
         if labels_true:
+            true_known = True
             data_combined = np.concatenate(data_list, axis=0)
             labels_true_combined = np.concatenate(labels_true, axis=0)
             data_list = [data_combined[labels_true_combined==i,:] for i in np.unique(labels_true_combined)]
@@ -249,7 +253,7 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
             s_list = [np.sum(s_list)]
             print('New m_list based on true cell type cluster: ',m_list)
 
-        ZW, anchor_list, s_list, W_anchor = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True)
+        ZW, anchor_list, s_list, W_anchor = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True, true_known=true_known)
         if labels_true: 
             db_list = [anchor_list, s_list, W_anchor, Wm, m_list] 
         else:
