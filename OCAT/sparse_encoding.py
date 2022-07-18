@@ -222,21 +222,21 @@ def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_
 #       db_list                                -- anchor_list, s_list, W_anchor, Wm
 #                                                 from reference dataset for cell inference
 ###################################################################
-def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, if_inference=False, random_seed=42):
+def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, tfidf=0, mode='FSM', if_inference=False, random_seed=42):
     if m_list == None:
         m_list = m_estimate(data_list)
     if s_list ==None:
         s_list = [round(p*m) for m in m_list]
     if dim == None:
         dim = dim_estimate(data_list)
-    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm, tfidf=tfidf)
     if if_inference:
-        data_list, Wm = apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
+        data_list, Wm = apply_dim_reduct(data_list, dim=dim, mode=mode, random_seed=random_seed)
         ZW, anchor_list, s_list, W_anchor = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True)
         db_list = [anchor_list, s_list, W_anchor, Wm]
         return ZW, db_list
     else:
-        data_list, _ = apply_dim_reduct(data_list, dim=dim, mode='FSM', random_seed=random_seed)
+        data_list, _ = apply_dim_reduct(data_list, dim=dim, mode=mode, random_seed=random_seed)
         ZW = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=False)
         return ZW
 

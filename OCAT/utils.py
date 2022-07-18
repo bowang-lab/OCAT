@@ -8,7 +8,7 @@ import scipy.sparse
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.metrics import silhouette_score, adjusted_rand_score
-from sklearn.decomposition import PCA, KernelPCA
+from sklearn.decomposition import PCA, TruncatedSVD
 import csv
 import warnings
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, normalize
@@ -25,6 +25,8 @@ import sys
 import umap.umap_ as umap
 import seaborn as sns
 from .lineage import estimate_num_cluster
+import matplotlib.pyplot as plt
+
 
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
@@ -49,8 +51,38 @@ def l2_normalization(data_list, is_memory=True):
         data_list[i] = X
     return data_list
 
-def preprocess(data_list, log_norm, l2_norm):
+def TFIDF(data, type, scale_factor=10000):
+    data = data.T
+    nCells = data.shape[1]
+    nPeaks = data.shape[0]
+    peak_sum = data.sum(axis=1)
+    lib_size = data.sum(axis=0)
+    avg_peak_signal = peak_sum/nCells
+    if type==1:
+        tf = data.multiply(1/lib_size)
+        idf = 1/avg_peak_signal
+        norm_data = tf.multiply(idf)
+        return (norm_data*scale_factor).log1p()
+    elif type==2:
+        tf = data.multiply(1/lib_size)
+        idf = 1/avg_peak_signal
+        idf = idf.log1p()
+        return tf.multiply(idf)
+    elif type==3:
+        tf = data.multiply(1/lib_size)
+        tf = tf*scale_factor.log1p()
+        idf = 1/avg_peak_signal
+        idf = idf.log1p()
+        return tf.multiply(idf)
+    elif type==4:
+        idf = 1/avg_peak_signal
+        return data.multiply(idf)
+    else:
+        return data
+
+def preprocess(data_list, log_norm, l2_norm, tfidf=0):
     assert len(data_list) > 0, "Data list cannot be empty"
+    assert tfidf in [0,1,2,3,4], "tfidf can only be one of 0,1,2,3,4"
     # Check data format, must be sparse.csr_matrix or np.ndarray
     if isinstance(data_list[0], scipy.sparse.csr_matrix):
         is_memory=True
@@ -59,11 +91,14 @@ def preprocess(data_list, log_norm, l2_norm):
     else:
         sys.exit("Data matrix must be np.ndarray or sparse.csc_matrix")
     # Perform normalization
+    if tfidf:
+        data_list = [TFIDF(i, type=tfidf).T for i in data_list]
     if log_norm:
         data_list = normalize_data(data_list, is_memory)
     if l2_norm:
         data_list = l2_normalization(data_list, is_memory)
     return data_list
+
 
 ##############################################
 #     k      ()     -- Dimension of PCA subspace to learn
@@ -183,13 +218,14 @@ def balanced_smapling(data_list, random_seed=42):
 # In: data_list   [(a,n)...(z,n)]    -- list of datasets
 #     dim                            -- desired dimension after dimensionality reduction
 #     m                              -- num of anchors
+#     mode                           -- 'FSM' or 'TruncatedSVD'
 # Out:
 #     data_list   [(a,dim)...(z,dim)]    -- list of datasets
 # Description: The function reduces the datasets to dim subspaces
 ##############################################
 def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=False):
     assert len(data_list) > 0, 'Data list cannot be empty'
-    assert mode in ['FSM', 'pca'], 'Select dimension reduction method: FSM or PCA'
+    assert mode in ['FSM', 'TruncatedSVD'], 'Select dimension reduction method: FSM or TruncatedSVD'
     # Check data format, must be sparse.csr_matrix or np.ndarray
     if isinstance(data_list[0], scipy.sparse.csr_matrix):
         is_memory=True
@@ -219,13 +255,12 @@ def apply_dim_reduct(data_list, dim=None, mode='FSM', random_seed=42, upsample=F
             else:
                 Wm, _ , _ = online_FSM(data_combined, dim, random_seed)
             data_list = [np.matmul(i, Wm) for i in data_list]
-    else:
-        #TODO: test sparse implementation
-        pca = KernelPCA(n_components=dim, kernel='cosine', eigen_solver='arpack', random_state=random_seed)
-        pca.fit(data_combined)
-        data_list = [np.nan_to_num(pca.transform(i)) for i in data_list]
-        anchor_list = [np.nan_to_num(pca.transform(i)) for i in anchor_list]
-    return data_list, Wm
+        return data_list, Wm
+    elif mode == 'TruncatedSVD':
+        svd = TruncatedSVD(n_components=dim, n_iter=15, random_state=42)
+        svd.fit(data_combined)
+        data_list = [np.nan_to_num(svd.transform(i)) for i in data_list]
+    return data_list
 
 def apply_dim_reduct_inference(data_list, Wm):
     data_list = [i.dot(Wm) for i in data_list]
@@ -262,12 +297,15 @@ def evaluate_clusters(Z, num_cluster=None, n_init=20, return_num_cluster=False):
     else:
         return clusters.labels_
 
-def plot_umap(Z, labels):
+def plot_umap(Z, labels, show_plot=True):
     reducer = umap.UMAP()
     Z_scaled = StandardScaler().fit_transform(Z)
     embedding = reducer.fit_transform(Z_scaled)
-    ax = sns.scatterplot(embedding[:, 0], embedding[:, 1], hue=labels, palette=sns.color_palette('muted', n_colors=len(np.unique(labels))))
-    ax.set(xlabel='UMAP0', ylabel='UMAP1', xticklabels=[], yticklabels=[])
-    ax.set_xticks([])
-    ax.set_yticks([])
-    return ax.get_figure()
+    if show_plot:
+        plt.figure()
+        ax = sns.scatterplot(embedding[:, 0], embedding[:, 1], hue=labels, palette=sns.color_palette('muted', n_colors=len(np.unique(labels))))
+        ax.set(xlabel='UMAP0', ylabel='UMAP1', xticklabels=[], yticklabels=[])
+        ax.set_xticks([])
+        ax.set_yticks([])
+        return ax.get_figure(),embedding
+    return embedding
