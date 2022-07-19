@@ -28,6 +28,30 @@ from .lineage import estimate_num_cluster
 import matplotlib.pyplot as plt
 
 
+def order_genes(data_list, var_list):
+    assert len(data_list)==len(var_list), "data_list and var_list length doesn't match"
+
+    idx_list = []
+    first_dataset_idx = {j: i for i,j in enumerate(var_list[0])}
+    index_intersection = first_dataset_idx.keys()
+    idx_list.append(first_dataset_idx)
+    
+    if len(data_list)>1:
+        for var in var_list[1:]:
+            index_dict = {j: i for i,j in enumerate(var)}
+            idx_list.append(index_dict)
+            index_intersection = index_intersection & index_dict.keys()
+
+    assert len(index_intersection)>0, "No Common elements found in var_list"
+
+    tmp_data_list = []
+
+    for i, dataset in enumerate(data_list):
+        idx = [idx_list[i].get(var) for var in index_intersection]
+        tmp = scipy.sparse.csr_matrix(dataset[idx,:])
+        tmp_data_list.append(tmp)
+    return tmp_data_list,[list(index_intersection)]*len(var_list)
+
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
         if is_memory:
@@ -36,7 +60,6 @@ def normalize_data(data_list, is_memory=True):
         else:
             X = np.log10(X+1).astype(np.float32)
             X = np.ascontiguousarray(X)
-        print(data_list[i].shape)
     return data_list
 
 def l2_normalization(data_list, is_memory=True):
