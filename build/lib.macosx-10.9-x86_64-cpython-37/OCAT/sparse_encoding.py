@@ -284,7 +284,6 @@ def run_cell_inference(data_list, labels_db, db_list, true_known=False, ZW_db=li
         assert ZW_db!=list(), "Must input ZW_db if the reference datasets has no true labels"
         [anchor_list, s_list, W_anchor, Wm] = db_list
 
-    labels_db = np.concatenate(labels_db,axis=0)
     data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
     data_list = apply_dim_reduct_inference(data_list, Wm)
     Z_list = []
