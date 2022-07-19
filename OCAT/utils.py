@@ -27,7 +27,6 @@ import seaborn as sns
 from .lineage import estimate_num_cluster
 import matplotlib.pyplot as plt
 
-
 def order_genes(data_list, var_list):
     assert len(data_list)==len(var_list), "data_list and var_list length doesn't match"
 
@@ -51,7 +50,6 @@ def order_genes(data_list, var_list):
         tmp = scipy.sparse.csr_matrix(dataset[idx,:])
         tmp_data_list.append(tmp)
     return tmp_data_list,[list(index_intersection)]*len(var_list)
-
 
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):

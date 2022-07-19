@@ -52,7 +52,6 @@ def order_genes(data_list, var_list):
         tmp_data_list.append(tmp)
     return tmp_data_list,[list(index_intersection)]*len(var_list)
 
-
 def normalize_data(data_list, is_memory=True):
     for i, X in enumerate(data_list):
         if is_memory:
