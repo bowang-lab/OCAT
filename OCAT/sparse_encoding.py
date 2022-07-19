@@ -276,14 +276,15 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
 # Out:  ZW              (a+...+z, m)           -- OCAT features of the inference dataset
 #       labels                                 -- inferred cell type labels from inference dataset
 ###################################################################
-def run_cell_inference(data_list, labels_db, db_list, true_known=False, ZW_db=None, log_norm=True, l2_norm=True, cn=5):
+def run_cell_inference(data_list, labels_db, db_list, true_known=False, ZW_db=list(), log_norm=True, l2_norm=True, cn=5):
 
     if true_known:
         [anchor_list, s_list, W_anchor, Wm, m_list] = db_list
     else:
-        assert ZW_db!=None, "Must input ZW_db if the reference datasets has no true labels"
+        assert ZW_db!=list(), "Must input ZW_db if the reference datasets has no true labels"
         [anchor_list, s_list, W_anchor, Wm] = db_list
 
+    labels_db = np.concatenate(labels_db,axis=0)
     data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
     data_list = apply_dim_reduct_inference(data_list, Wm)
     Z_list = []
