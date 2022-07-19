@@ -49,7 +49,7 @@ In our tool, there are two type of reference building technique:
 1. the groud truth labels for reference data_liist are known
 2. the groud truth labels for reference data_liist are unknown
 
-It is differentiate by a `labels_true` parameter, which intakes a list of true labels for all reference datasets in the `data_list`. Ignore it if there is no groud truth labels. 
+It is differentiated by a `labels_true` parameter, which intakes a list of true labels for all reference datasets in the `data_list`. Ignore it if there is no groud truth labels. 
 
 ```python
 ZW_db, db_list =  OCAT.run_OCAT(ref_data_list, dim=30, if_inference=True, labels_true=[labels_combined])
