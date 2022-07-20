@@ -17,7 +17,6 @@ setup(
   install_requires=[
           'numpy>=1.17.2',
           'pandas',
-          'faiss-cpu',
           'scikit-learn>=0.21.3',
           'matplotlib',
           'scipy>=1.3.1',
