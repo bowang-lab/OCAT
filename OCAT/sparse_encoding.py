@@ -264,6 +264,18 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
         ZW = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=False)
         return ZW
 
+def gene_alignment(ref_genes,inf_genes):
+    ref_gene_dict = {j: i for i,j in enumerate(ref_genes)}
+    inf_gene_dict = {j: i for i,j in enumerate(inf_genes)}
+
+    genes_intersection = set(ref_genes) & set(inf_genes)
+    genes_intersection = sorted(genes_intersection, key=lambda x: ref_gene_dict[x])
+
+    ref_gene_idx = [ref_gene_dict.get(var) for var in genes_intersection]
+    inf_gene_idx = [inf_gene_dict.get(var) for var in genes_intersection]
+
+    return ref_gene_idx, inf_gene_idx
+    
 ####################################################################
 # In:   data_list       [(a,dim)...(z,dim)]    -- list of inference datasets (dim PCs)
 #       labels_db                              -- cell type annotations from reference dataset
@@ -276,15 +288,19 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
 # Out:  ZW              (a+...+z, m)           -- OCAT features of the inference dataset
 #       labels                                 -- inferred cell type labels from inference dataset
 ###################################################################
-def run_cell_inference(data_list, labels_db, db_list, true_known=False, ZW_db=list(), log_norm=True, l2_norm=True, cn=5):
+def run_cell_inference(data_list, labels_db, db_list, ref_genes,inf_genes, true_known=False, ZW_db=list(), log_norm=True, l2_norm=True, cn=5):
+    assert ref_genes and inf_genes, "Must input reference gene label and Query gene labels "
 
     if true_known:
         [anchor_list, s_list, W_anchor, Wm, m_list] = db_list
     else:
         assert ZW_db!=list(), "Must input ZW_db if the reference datasets has no true labels"
         [anchor_list, s_list, W_anchor, Wm] = db_list
+    
+    ref_gene_idx, inf_gene_idx = gene_alignment(ref_genes, inf_genes)
+    Wm=Wm[ref_gene_idx,:]
 
-    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
+    data_list = preprocess([data_list[0][:,inf_gene_idx]], log_norm=log_norm, l2_norm=l2_norm)
     data_list = apply_dim_reduct_inference(data_list, Wm)
     Z_list = []
     for i, dataset in enumerate(data_list):
