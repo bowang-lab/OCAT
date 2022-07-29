@@ -1,10 +1,10 @@
 ## Cell inference using the mouse cortex dataset
-OCAT supports immediate cell type inference of incoming data based on existing databases, without re- computing the latent representations by combining the new incoming ("inference") dataset and the existing ("reference") dataset.
+OCAT supports immediate cell type inference of incoming data based on existing databases, without re- computing the latent representations by combining the new incoming ("query") dataset and the existing ("reference") dataset.
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
-- [Step 1. Run OCAT on the reference dataset](#reference)
-- [Step 2. Run OCAT on the inference dataset](#inference)
+- [Step 1. Construct the OCAT reference](#reference)
+- [Step 2. Query new incoming dataset](#inference)
 
 ```python
 import OCAT
