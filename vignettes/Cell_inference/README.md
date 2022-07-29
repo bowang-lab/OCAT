@@ -41,7 +41,7 @@ labels_true = data['true_labs'].flatten()
 labels_combined = labels_true[ref_index]
 ```
 
-<a name="reference"></a>**Step 1. Run OCAT on the reference dataset**
+<a name="reference"></a>**Step 1. Construct the OCAT reference**
 
 On the reference dataset, OCAT extracts its sparse encoding and saves the projection of the raw counts to `d`-dimensional subspace. 
 
@@ -55,7 +55,7 @@ It is differentiated by a `labels_true` parameter, which intakes a list of true 
 ZW_db, db_list =  OCAT.run_OCAT(ref_data_list, dim=30, if_inference=True, labels_true=[labels_combined])
 ```
 
-<a name="inference"></a>**Step 2. Run OCAT on the inference dataset**
+<a name="inference"></a>**Step 2. Query new incoming dataset**
 
 When an inference dataset comes in, it is projected to the same subspace as the reference dataset through `db_list`, and the predicted labels is based on the model trained using the reference dataset. The labels `labels_db` in the training set can be either the annotated cell types (ground truth) or the predicted cell types based on `ZW_db`. Here we adopt the annotated cell type labels. 
 
