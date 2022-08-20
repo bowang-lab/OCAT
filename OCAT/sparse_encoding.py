@@ -297,7 +297,7 @@ def run_cell_inference(data_list, db_list, ref_genes=[],inf_genes=[], labels_db 
         assert ref_genes and inf_genes, "Must input reference gene label and Query gene labels if the gene dimensions don't match"
 
 
-    if ~true_known:
+    if true_known==False:
         assert  labels_db!=[], "Must input labels_db when true_known = False"
 
     if true_known:
