@@ -294,15 +294,12 @@ def run_cell_inference(data_list, db_list, ref_genes=[],inf_genes=[], labels_db 
     if data_list[0].shape[1]==db_list[3].shape[0]:
         print("Assumed the genes are aligned and in the same order since there is no genes inputs and dimension matched")
     else:
-        assert ref_genes and inf_genes, "Must input reference gene label and Query gene labels if the gene dimensions don't match"
-
-
-    if true_known==False:
-        assert  labels_db!=[], "Must input labels_db when true_known = False"
+        assert ref_genes and inf_genes, "Must input reference gene label and Query gene labels if the gene dimensions don't match" 
 
     if true_known:
         [anchor_list, s_list, W_anchor, Wm, m_list, labels_db] = db_list
     else:
+        assert  labels_db!=[], "Must input labels_db when true_known = False"
         assert ZW_db!=list(), "Must input ZW_db if the reference datasets has no true labels"
         [anchor_list, s_list, W_anchor, Wm] = db_list
     
