@@ -237,11 +237,13 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
     if if_inference:
         data_list, Wm = apply_dim_reduct(data_list, dim=dim, mode=mode, random_seed=random_seed)
         true_known = False
-        if labels_true:
+        if list(labels_true):
             true_known = True
             data_combined = np.concatenate(data_list, axis=0)
             labels_true_combined = np.concatenate(labels_true, axis=0)
             data_list = [data_combined[labels_true_combined==i,:] for i in np.unique(labels_true_combined)]
+            labels_true_reconstruct = [labels_true_combined[labels_true_combined==i] for i in np.unique(labels_true_combined)]
+            labels_true_reconstruct = np.concatenate(labels_true_reconstruct,axis=0)
             m_sum = np.sum(m_list)
             # extract the cell numbers in each true cluster
             m_list = [data_list[i].shape for i in range(len(np.unique(labels_true_combined)))]
@@ -255,7 +257,7 @@ def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True
 
         ZW, anchor_list, s_list, W_anchor = sparse_encoding_integration(data_list, m_list=m_list, s_list=s_list, p=p, cn=5, if_inference=True, true_known=true_known)
         if labels_true: 
-            db_list = [anchor_list, s_list, W_anchor, Wm, m_list] 
+            db_list = [anchor_list, s_list, W_anchor, Wm, m_list, labels_true_reconstruct] 
         else:
             db_list = [anchor_list, s_list, W_anchor, Wm]
         return ZW, db_list
@@ -288,19 +290,25 @@ def gene_alignment(ref_genes,inf_genes):
 # Out:  ZW              (a+...+z, m)           -- OCAT features of the inference dataset
 #       labels                                 -- inferred cell type labels from inference dataset
 ###################################################################
-def run_cell_inference(data_list, labels_db, db_list, ref_genes,inf_genes, true_known=False, ZW_db=list(), log_norm=True, l2_norm=True, cn=5):
-    assert ref_genes and inf_genes, "Must input reference gene label and Query gene labels "
+def run_cell_inference(data_list, db_list, ref_genes=[],inf_genes=[], labels_db = [], true_known=False, ZW_db=list(), log_norm=True, l2_norm=True, cn=5):
+    if data_list[0].shape[1]==db_list[3].shape[0]:
+        print("Assumed the genes are aligned and in the same order since there is no genes inputs and dimension matched")
+    else:
+        assert ref_genes and inf_genes, "Must input reference gene label and Query gene labels if the gene dimensions don't match" 
 
     if true_known:
-        [anchor_list, s_list, W_anchor, Wm, m_list] = db_list
+        [anchor_list, s_list, W_anchor, Wm, m_list, labels_db] = db_list
     else:
+        assert  labels_db!=[], "Must input labels_db when true_known = False"
         assert ZW_db!=list(), "Must input ZW_db if the reference datasets has no true labels"
         [anchor_list, s_list, W_anchor, Wm] = db_list
     
-    ref_gene_idx, inf_gene_idx = gene_alignment(ref_genes, inf_genes)
-    Wm=Wm[ref_gene_idx,:]
+    if list(ref_genes) and list(inf_genes):
+        ref_gene_idx, inf_gene_idx = gene_alignment(ref_genes, inf_genes)
+        Wm=Wm[ref_gene_idx,:]
+        data_list = [data_list[0][:,inf_gene_idx]]
 
-    data_list = preprocess([data_list[0][:,inf_gene_idx]], log_norm=log_norm, l2_norm=l2_norm)
+    data_list = preprocess(data_list, log_norm=log_norm, l2_norm=l2_norm)
     data_list = apply_dim_reduct_inference(data_list, Wm)
     Z_list = []
     for i, dataset in enumerate(data_list):
