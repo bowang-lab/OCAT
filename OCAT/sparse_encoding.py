@@ -225,7 +225,7 @@ def sparse_encoding_integration(data_list, m_list, s_list=None, p=0.3, cn=5, if_
 #       db_list                                -- anchor_list, s_list, W_anchor, Wm
 #                                                 from reference dataset for cell inference
 ###################################################################
-def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, tfidf=0, mode='FSM', if_inference=False, random_seed=42, labels_true=None):
+def run_OCAT(data_list, m_list=None, s_list=None, dim=None, p=0.3, log_norm=True, l2_norm=True, tfidf=0, mode='FSM', if_inference=False, random_seed=42, labels_true=[]):
     if m_list == None:
         m_list = m_estimate(data_list)
     if s_list ==None:
