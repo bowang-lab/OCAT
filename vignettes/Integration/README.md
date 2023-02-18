@@ -70,4 +70,4 @@ sc.pl.umap(
     wspace=0.6,
 )
 ```
-<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="1000" height="400" />  
+<img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Pancreas_UMAP_github.png" width="1000" height="300" />  
