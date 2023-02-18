@@ -1,7 +1,7 @@
-## Integrating Five Human Pancreatic scRNA-seq datasets 
+## Integrating Six Human Pancreatic scRNA-seq datasets 
 
-This vignette demonstrates how OCAT integrates multiple scRNA-seq datasets. The human pancreas data set consists of five data sources for human pancreatic cells (Baron et al., Segerstolpe et al., Muraro et al., Wang et al., Xin et al.). 
-Tran et al. removed cells with ambiguous annotations, and the resulting batches contain a total of 14,767 cells with 15 different cell types. This data set captures batch effect across multiple sequencing technologies.
+This vignette demonstrates how OCAT integrates multiple scRNA-seq datasets. The human pancreas data set consists of five data sources for human pancreatic cells with six datasets(Baron et al., Segerstolpe et al., Muraro et al., Wang et al., Xin et al.). 
+Tran et al. removed cells with ambiguous annotations for all datasets except Muraro Celseq2, and the resulting batches contain a total of 14,767 cells with 15 different cell types. This data set captures batch effect across multiple sequencing technologies.
 
 ## Table of Contents
 - [Step 0. Import data](#data_import)
