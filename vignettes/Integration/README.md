@@ -10,43 +10,22 @@ Tran et al. removed cells with ambiguous annotations, and the resulting batches 
 
 
 <a name="data_import"></a>**Step 0. Import data**   
-The Human Pancreas dataset consists of five scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016, Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). 
+The Human Pancreas dataset consists of six scRNA-seq datasets (Baron et al. 2016, Muraro et al. 2016 (two from here), Segerstolpe et al. 2016, Wang et al. 2016, Xin et al. 2016). 
 
-To download the compiled dataset:
-```bash
-$ wget https://data.wanglab.ml/OCAT/Pancreas.zip
-$ unzip Pancreas.zip 
-```
-
-Inside the `Pancreas` folder, the data and labels are organized as such:
-```
-Pancreas
-├── data
-│   ├── baron_1.npz
-│   ├── muraro_2.npz
-│   ├── seg_3.npz
-│   ├── wang_4.npz
-│   └── xin_5.npz
-└── label
-    ├── baron_1_label.npy
-    ├── muraro_2_label.npy
-    ├── seg_3_label.npy
-    ├── wang_4_label.npy
-    └── xin_5_label.npy
-```
+The compiled AnnData dataset can be downloaded [here](https://drive.google.com/file/d/1shc4OYIbq2FwbyGUaYuzizuvzW-giSTs/view).
     
-```python
-import os
-from scipy.sparse import load_npz, csr_matrix
-
-data_path = './Pancreas/data'
-file_list = ['baron_1', 'muraro_2', 'seg_3', 'wang_4', 'xin_5']
-data_list = [load_npz(os.path.join(data_path, i + '.npz')).tocsr() for i in file_list]
-```
-
 ```python
 import OCAT
 import numpy as np
+import anndata as ad
+import scanpy as sc
+import matplotlib.pyplot as plt
+
+data_path = 'fivepancreas_wang_raw.h5ad'
+data = ad.read_h5ad(data_path)
+
+ref_list = [data[data.obs.dataset == i,] for i in np.unique(data.obs.dataset)]
+data_list = [i.X for i in ref_list]
 ```
 
 <a name="pre_processing"></a>**Step 1. Run OCAT**
@@ -57,44 +36,38 @@ The `run_OCAT` function automates
 3. returns `ZW`, the OCAT sparse encoding of the integrated datasets with `m = 65` "ghost" cells in each dataset
 
 ```python
-ZW = OCAT.run_OCAT(data_list, m_list=[65, 65, 65, 65, 65], dim=60, p=0.3, log_norm=True, l2_norm=True)
+m_list = [65]*5
+ZW = OCAT.run_OCAT(ref_data_list, dim=60, m_list=m_list)
 ```
 <a name="clustering"></a>**Step 2. Clustering \& visualization**
 
-Import the annotated labels and create batch labels for the pancreas data
+Retrieve the annotated labels and create batch labels for the pancreas data
 ```python
-## import the annotated labels
-label_path = './Pancreas/label'
-label_list = [np.load(os.path.join(label_path, i + '_label.npy'), allow_pickle=True) for i in file_list]
-labels_combined = np.concatenate(label_list, axis=0)
-
-## create batch labels
-def create_ds_label(label_list, file_list):
-    label_ds_list = []
-    for i, name in enumerate(file_list):
-        label_ds_temp = np.repeat(name, len(label_list[i]))
-        label_ds_list.append(label_ds_temp)
-    return label_ds_list
-
-label_ds_list = create_ds_label(label_list, file_list)
-ds_combined = np.concatenate(label_ds_list, axis=0)
+query_latent = ad.AnnData(ZW)
+query_latent.obs['cell_type']=np.concatenate([i.obs.cell_type.tolist() for i in ref_list],axis=0)
+query_latent.obs['dataset']=np.concatenate([i.obs.dataset.tolist() for i in ref_list],axis=0)
 ```
 
 Evaluate the clustering performance of the predicted labels
 ```python
 from sklearn.metrics.cluster import normalized_mutual_info_score
-labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(labels_combined)))
-batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(ds_combined)))
+labels_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(query_latent.obs['cell_type'])))
+batch_pred = OCAT.evaluate_clusters(ZW, num_cluster=len(np.unique(query_latent.obs['dataset'])))
 
-NMI_cell_type = normalized_mutual_info_score(labels_combined, labels_pred)
-NMI_batch = normalized_mutual_info_score(ds_combined, batch_pred)
+NMI_cell_type = normalized_mutual_info_score(query_latent.obs['cell_type'], labels_pred)
+NMI_batch = normalized_mutual_info_score(query_latent.obs['dataset'], batch_pred)
 ```
 UMAP Visualization
 ```python
-obs = pd.DataFrame({'cell_type':labels_combined, 'batch':ds_combined})
-adata2 = sc.AnnData(X=ZW, obs=obs)
-sc.pp.neighbors(adata2, use_rep='X')
-sc.tl.umap(adata2)
-sc.pl.umap(adata2, color=['cell_type', 'batch'], save=True)
+sc.pp.neighbors(query_latent)
+sc.tl.leiden(query_latent)
+sc.tl.umap(query_latent)
+plt.figure()
+sc.pl.umap(
+    query_latent,
+    color=["dataset", "cell_type"],
+    frameon=False,
+    wspace=0.6,
+)
 ```
 <img src="https://github.com/bowang-lab/OCAT/blob/master/vignettes/Integration/Prancreas_UMAP_github.png" width="1000" height="400" />  
