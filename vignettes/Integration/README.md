@@ -37,7 +37,7 @@ The `run_OCAT` function automates
 
 ```python
 m_list = [65]*5
-ZW = OCAT.run_OCAT(ref_data_list, dim=60, m_list=m_list)
+ZW = OCAT.run_OCAT(data_list, dim=60, m_list=m_list)
 ```
 <a name="clustering"></a>**Step 2. Clustering \& visualization**
 
